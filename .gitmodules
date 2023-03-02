@@ -1,0 +1,9 @@
+[submodule "users"]
+	path = users
+	url = https://github.com/pervasive-cats/toys-store-users.git
+[submodule "items"]
+	path = items
+	url = https://github.com/pervasive-cats/toys-store-items.git
+[submodule "carts"]
+	path = carts
+	url = https://github.com/pervasive-cats/toys-store-carts.git
