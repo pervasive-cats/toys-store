@@ -25,7 +25,13 @@ lazy val root = project
     ),
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
-    libraryDependencies ++= Seq(),
+    libraryDependencies ++= Seq(
+      akka,
+      akkaStream,
+      akkaHttp,
+      akkaHttpSprayJson,
+      ditto
+    ),
     wartremoverErrors ++= Warts.allBut(Wart.ImplicitParameter),
     version := "0.0.0",
     headerLicense := Some(
