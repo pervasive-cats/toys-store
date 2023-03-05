@@ -1,12 +1,14 @@
 version: "3.9"
+
 services:
   rabbitmq:
     image: "rabbitmq:3.11.7"
     ports:
+      - "81:15672"
       - "5672:5672"
     environment:
-      - RABBITMQ_DEFAULT_USER=${USERNAME}
-      - RABBITMQ_DEFAULT_PASS=${PASSWORD}
+      - RABBITMQ_DEFAULT_USER=${RMQ_USERNAME}
+      - RABBITMQ_DEFAULT_PASS=${RMQ_PASSWORD}
 
   postgres_users:
     image: toys-store/postgres-users
@@ -14,93 +16,87 @@ services:
     ports:
       - "5433:5432"
     environment:
-      - POSTGRES_USER=${USERNAME}
-      - POSTGRES_PASSWORD=${PASSWORD}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
   users:
     image: toys-store/users
     build: ./users
-    ports:
-      - "8881:8080"
     depends_on:
       - postgres_users
       - rabbitmq
+    network_mode: "host"
   postgres_items:
     image: toys-store/postgres-items
     build: ./items/postgres-docker
     ports:
       - "5434:5432"
     environment:
-      - POSTGRES_USER=${USERNAME}
-      - POSTGRES_PASSWORD=${PASSWORD}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
   items:
     image: toys-store/items
     build: ./items
-    ports:
-      - "8882:8080"
     depends_on:
       - postgres_items
       - rabbitmq
+    network_mode: "host"
   postgres_carts:
     image: toys-store/postgres-carts
     build: ./carts/postgres-docker
     ports:
       - "5435:5432"
     environment:
-      - POSTGRES_USER=${USERNAME}
-      - POSTGRES_PASSWORD=${PASSWORD}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
   carts:
     image: toys-store/carts
     build: ./carts
-    ports:
-      - "8883:8080"
     depends_on:
       - postgres_carts
       - rabbitmq
+    network_mode: "host"
   postgres_stores:
     image: toys-store/postgres-stores
     build: ./stores/postgres-docker
     ports:
       - "5436:5432"
     environment:
-      - POSTGRES_USER=${USERNAME}
-      - POSTGRES_PASSWORD=${PASSWORD}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
   stores:
     image: toys-store/stores
     build: ./stores
-    ports:
-      - "8884:8080"
     depends_on:
       - postgres_stores
       - rabbitmq
+    network_mode: "host"
   postgres_shopping:
     image: toys-store/postgres-shopping
     build: ./shopping/postgres-docker
     ports:
       - "5437:5432"
     environment:
-      - POSTGRES_USER=${USERNAME}
-      - POSTGRES_PASSWORD=${PASSWORD}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
   shopping:
     image: toys-store/shopping
     build: ./shopping
-    ports:
-      - "8885:8080"
     depends_on:
       - postgres_shopping
       - rabbitmq
+    network_mode: "host"
   postgres_payments:
     image: toys-store/postgres-payments
     build: ./payments/postgres-docker
     ports:
       - "5438:5432"
     environment:
-      - POSTGRES_USER=${USERNAME}
-      - POSTGRES_PASSWORD=${PASSWORD}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
   payments:
     image: toys-store/payments
     build: ./payments
-    ports:
-      - "8886:8080"
     depends_on:
       - postgres_payments
       - rabbitmq
+    network_mode: "host"

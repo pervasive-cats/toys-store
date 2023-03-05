@@ -1,17 +1,15 @@
 version: "3.9"
+
 services:
   users:
     image: toys-store/users
     build: ./users
-    ports:
-      - "8881:8080"
+    network_mode: "host"
   items:
     image: toys-store/items
     build: ./items
-    ports:
-      - "8882:8080"
+    network_mode: "host"
   carts:
     image: toys-store/carts
     build: ./carts
-    ports:
-      - "8883:8080"
+    network_mode: "host"

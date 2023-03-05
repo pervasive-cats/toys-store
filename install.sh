@@ -28,7 +28,7 @@ MICROSERVICES=("users" "items" "carts" "stores" "shopping" "payments");
 
 for INDEX in ${!MICROSERVICES[@]}; do
     MICROSERVICE_NAME=${MICROSERVICES[$INDEX]};
-    SERVER_PORT_NUMBER=$(expr 8081 + $INDEX);
+    SERVER_PORT_NUMBER=$(expr 8082 + $INDEX);
     POSTGRES_PORT_NUMBER=$(expr 5433 + $INDEX);
     touch ./$MICROSERVICE_NAME/application.conf;
     cat > ./$MICROSERVICE_NAME/application.conf <<-EOF
@@ -39,23 +39,23 @@ for INDEX in ${!MICROSERVICES[@]}; do
 		        password = $DB_PASSWORD
 		        databaseName = $MICROSERVICE_NAME
 		        portNumber = $POSTGRES_PORT_NUMBER
-		        serverName = 0.0.0.0
+		        serverName = localhost
 		    }
 		    connectionTimeout = 30000
 		}
 		server {
 		    portNumber = $SERVER_PORT_NUMBER
-		    hostName = 0.0.0.0
+		    hostName = localhost
 		}
 		messageBroker {
 		    username = $RMQ_USERNAME
 		    password = $RMQ_PASSWORD
 		    virtualHost = "/"
 		    portNumber = 5672
-		    hostName = 0.0.0.0
+		    hostName = localhost
 		}
 		ditto {
-		    hostName = 0.0.0.0
+		    hostName = localhost
 		    portNumber = 8080
 		    username = $DT_USERNAME
 		    password = $DT_PASSWORD
