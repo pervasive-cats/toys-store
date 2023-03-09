@@ -5,7 +5,9 @@ services:
     image: "rabbitmq:3.11.7"
     ports:
       - "81:15672"
-      - "5672:5672"
+    expose:
+      - 5672
+    hostname: rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER=${RMQ_USERNAME}
       - RABBITMQ_DEFAULT_PASS=${RMQ_PASSWORD}
@@ -13,8 +15,9 @@ services:
   postgres_users:
     image: toys-store/postgres-users
     build: ./users/postgres-docker
-    ports:
-      - "5433:5432"
+    expose:
+      - 5432
+    hostname: postgres_users
     environment:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -24,12 +27,14 @@ services:
     depends_on:
       - postgres_users
       - rabbitmq
-    network_mode: "host"
+    ports:
+      - "8082:8080"
   postgres_items:
     image: toys-store/postgres-items
     build: ./items/postgres-docker
-    ports:
-      - "5434:5432"
+    expose:
+      - 5432
+    hostname: postgres_items
     environment:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -39,12 +44,14 @@ services:
     depends_on:
       - postgres_items
       - rabbitmq
-    network_mode: "host"
+    ports:
+      - "8083:8080"
   postgres_carts:
     image: toys-store/postgres-carts
     build: ./carts/postgres-docker
-    ports:
-      - "5435:5432"
+    expose:
+      - 5432
+    hostname: postgres_carts
     environment:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -54,12 +61,17 @@ services:
     depends_on:
       - postgres_carts
       - rabbitmq
-    network_mode: "host"
+    ports:
+      - "8084:8080"
+    networks:
+      - default
+      - ditto_default
   postgres_stores:
     image: toys-store/postgres-stores
     build: ./stores/postgres-docker
-    ports:
-      - "5436:5432"
+    expose:
+      - 5432
+    hostname: postgres_stores
     environment:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -69,12 +81,17 @@ services:
     depends_on:
       - postgres_stores
       - rabbitmq
-    network_mode: "host"
+    ports:
+      - "8085:8080"
+    networks:
+      - default
+      - ditto_default
   postgres_shopping:
     image: toys-store/postgres-shopping
     build: ./shopping/postgres-docker
-    ports:
-      - "5437:5432"
+    expose:
+      - 5432
+    hostname: postgres_shopping
     environment:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -84,12 +101,14 @@ services:
     depends_on:
       - postgres_shopping
       - rabbitmq
-    network_mode: "host"
+    ports:
+      - "8086:8080"
   postgres_payments:
     image: toys-store/postgres-payments
     build: ./payments/postgres-docker
-    ports:
-      - "5438:5432"
+    expose:
+      - 5432
+    hostname: postgres_payments
     environment:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -99,4 +118,10 @@ services:
     depends_on:
       - postgres_payments
       - rabbitmq
-    network_mode: "host"
+    ports:
+      - "8087:8080"
+
+networks:
+  ditto_default:
+    name: ditto_default
+    external: true

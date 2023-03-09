@@ -18,7 +18,10 @@ docker compose -f ./ditto/docker-compose.yml up -d;
 
 while true; do
     CONTAINERS=$(docker ps -a | { grep 'ditto' || true; } | { grep '(healthy)' || true; } | sed -rn 's/^.*?\s([a-z0-9\-]+)$/\1/p');
-    [[ "$CONTAINERS" != *"ditto-things-search-1"* ]] && [[ "$CONTAINERS" != *"ditto-things-1"* ]] && [[ "$CONTAINERS" != *"ditto-connectivity-1"* ]] && [[ "$CONTAINERS" != *"ditto-gateway-1"* ]] && [[ "$CONTAINERS" != *"ditto-policies-1"* ]] || break;
+    if [[ "$CONTAINERS" == *"ditto-things-search-1"* ]] && [[ "$CONTAINERS" == *"ditto-things-1"* ]] && [[ "$CONTAINERS" == *"ditto-connectivity-1"* ]] && [[ "$CONTAINERS" == *"ditto-gateway-1"* ]] && [[ "$CONTAINERS" == *"ditto-policies-1"* ]];
+    then
+        break;
+    fi;
     sleep 5;
 done;
 
@@ -26,43 +29,69 @@ echo "Ditto started";
 
 MICROSERVICES=("users" "items" "carts" "stores" "shopping" "payments");
 
-for INDEX in ${!MICROSERVICES[@]}; do
+for INDEX in "${!MICROSERVICES[@]}"; do
     MICROSERVICE_NAME=${MICROSERVICES[$INDEX]};
-    SERVER_PORT_NUMBER=$(expr 8082 + $INDEX);
-    POSTGRES_PORT_NUMBER=$(expr 5433 + $INDEX);
-    touch ./$MICROSERVICE_NAME/application.conf;
-    cat > ./$MICROSERVICE_NAME/application.conf <<-EOF
-		repository {
-		    dataSourceClassName = org.postgresql.ds.PGSimpleDataSource
-		    dataSource {
-		        user = $DB_USERNAME
-		        password = $DB_PASSWORD
-		        databaseName = $MICROSERVICE_NAME
-		        portNumber = $POSTGRES_PORT_NUMBER
-		        serverName = localhost
-		    }
-		    connectionTimeout = 30000
-		}
-		server {
-		    portNumber = $SERVER_PORT_NUMBER
-		    hostName = localhost
-		}
-		messageBroker {
-		    username = $RMQ_USERNAME
-		    password = $RMQ_PASSWORD
-		    virtualHost = "/"
-		    portNumber = 5672
-		    hostName = localhost
-		}
-		ditto {
-		    hostName = localhost
-		    portNumber = 8080
-		    username = $DT_USERNAME
-		    password = $DT_PASSWORD
-		    namespace = io.github.pervasivecats
-		    thingModel = "https://raw.githubusercontent.com/pervasive-cats/toys-store-carts/main/cart.jsonld"
-		}
-	EOF
+    SERVER_PORT_NUMBER=$((8082 + "$INDEX"));
+    touch ./"$MICROSERVICE_NAME"/application.conf;
+    if [[ "$MICROSERVICE_NAME" == "carts" ]]; then
+        cat > ./"$MICROSERVICE_NAME"/application.conf <<-EOF
+repository {
+    dataSourceClassName = org.postgresql.ds.PGSimpleDataSource
+    dataSource {
+        user = $DB_USERNAME
+        password = $DB_PASSWORD
+        databaseName = $MICROSERVICE_NAME
+        portNumber = 5432
+        serverName = postgres_$MICROSERVICE_NAME
+    }
+    connectionTimeout = 30000
+}
+server {
+    portNumber = $SERVER_PORT_NUMBER
+    hostName = 0.0.0.0
+}
+messageBroker {
+    username = $RMQ_USERNAME
+    password = $RMQ_PASSWORD
+    virtualHost = "/"
+    portNumber = 5672
+    hostName = rabbitmq
+}
+ditto {
+    hostName = ditto-things-1
+    portNumber = 8080
+    username = $DT_USERNAME
+    password = $DT_PASSWORD
+    namespace = io.github.pervasivecats
+    thingModel = "https://raw.githubusercontent.com/pervasive-cats/toys-store-carts/main/cart.jsonld"
+}
+EOF
+    else
+        cat > ./"$MICROSERVICE_NAME"/application.conf <<-EOF
+repository {
+    dataSourceClassName = org.postgresql.ds.PGSimpleDataSource
+    dataSource {
+        user = $DB_USERNAME
+        password = $DB_PASSWORD
+        databaseName = $MICROSERVICE_NAME
+        portNumber = 5432
+        serverName = postgres_$MICROSERVICE_NAME
+    }
+    connectionTimeout = 30000
+}
+server {
+    portNumber = $SERVER_PORT_NUMBER
+    hostName = 0.0.0.0
+}
+messageBroker {
+    username = $RMQ_USERNAME
+    password = $RMQ_PASSWORD
+    virtualHost = "/"
+    portNumber = 5672
+    hostName = rabbitmq
+}
+EOF
+    fi;
 done;
 
 docker compose up -d;
