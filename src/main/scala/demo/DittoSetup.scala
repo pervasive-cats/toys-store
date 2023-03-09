@@ -9,7 +9,6 @@ package demo
 
 import scala.jdk.OptionConverters.*
 import scala.util.matching.Regex
-
 import org.eclipse.ditto.base.model.common.HttpStatus
 import org.eclipse.ditto.client.DittoClient
 import org.eclipse.ditto.client.DittoClients
@@ -22,12 +21,9 @@ import org.eclipse.ditto.client.options.Options
 import org.eclipse.ditto.json.JsonValue
 import org.eclipse.ditto.messages.model.MessageDirection
 import org.eclipse.ditto.things.model.ThingId
-import spray.json.JsString
-import spray.json.JsValue
-import spray.json.enrichAny
-import spray.json.enrichString
-
+import spray.json.{enrichAny, enrichString, JsNumber, JsString, JsValue}
 import demo.Entity.*
+import AnyOps.===
 
 object DittoSetup {
 
@@ -40,13 +36,14 @@ object DittoSetup {
 
   private def handleMessage(
     message: RepliableMessage[String, String],
+    direction: MessageDirection,
     messageHandler: (RepliableMessage[String, String], Long, Long, String, Seq[JsValue]) => Unit,
     payloadFields: String*
   ): Unit = {
     val thingIdMatcher: Regex = "cart-(?<cartId>[0-9]+)-(?<store>[0-9]+)".r
     (message.getDirection, message.getEntityId.getName, message.getCorrelationId.toScala) match {
-      case (MessageDirection.TO, thingIdMatcher(cartId, store), Some(correlationId))
-           if cartId.toLongOption.isDefined && store.toLongOption.isDefined =>
+      case (messageDirection, thingIdMatcher(cartId, store), Some(correlationId))
+           if cartId.toLongOption.isDefined && store.toLongOption.isDefined && messageDirection === direction =>
         messageHandler(
           message,
           cartId.toLong,
@@ -58,32 +55,35 @@ object DittoSetup {
     }
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   private def simulateCart(client: DittoClient): Unit = {
+    // Actions requests sent to the device
     client
       .live
       .registerForMessage[String, String](
-        "ditto_actor_associate",
+        "demo_associate",
         "associate",
         classOf[String],
         (msg: RepliableMessage[String, String]) =>
           handleMessage(
             msg,
+            MessageDirection.TO,
             (msg, cartId, store, correlationId, fields) =>
               fields match {
                 case Seq(JsString(customer)) =>
                   client
-                    .twin()
+                    .twin
                     .forId(ThingId.of(s"io.github.pervasivecats:cart-$cartId-$store"))
                     .putAttribute("customer", customer)
                     .toCompletableFuture
                     .get()
                   client
-                    .twin()
+                    .twin
                     .forId(ThingId.of(s"io.github.pervasivecats:cart-$cartId-$store"))
                     .putAttribute("movable", true)
                     .toCompletableFuture
                     .get()
-                  println(s"Cart with id cart-$cartId-$store has been associated to customer $customer")
+                  println(s"! [DITTO 🛒] Cart with id cart-$cartId-$store has been associated to customer $customer")
                   sendReply(msg, correlationId, HttpStatus.OK, ResultResponseEntity(()).toJson.compactPrint)
                 case _ =>
                   sendReply(
@@ -99,26 +99,27 @@ object DittoSetup {
     client
       .live
       .registerForMessage(
-        "ditto_actor_lock",
+        "demo_lock",
         "lock",
         classOf[String],
         (msg: RepliableMessage[String, String]) =>
           handleMessage(
             msg,
+            MessageDirection.TO,
             (msg, cartId, store, correlationId, _) => {
               client
-                .twin()
+                .twin
                 .forId(ThingId.of(s"io.github.pervasivecats:cart-$cartId-$store"))
                 .putAttribute("customer", JsonValue.nullLiteral())
                 .toCompletableFuture
                 .get()
               client
-                .twin()
+                .twin
                 .forId(ThingId.of(s"io.github.pervasivecats:cart-$cartId-$store"))
                 .putAttribute("movable", false)
                 .toCompletableFuture
                 .get()
-              println(s"Cart with id cart-$cartId-$store has been locked")
+              println(s"! [DITTO 🛒] Cart with id cart-$cartId-$store has been locked")
               sendReply(
                 msg,
                 correlationId,
@@ -131,46 +132,15 @@ object DittoSetup {
     client
       .live
       .registerForMessage(
-        "ditto_actor_unlock",
-        "unlock",
-        classOf[String],
-        (msg: RepliableMessage[String, String]) =>
-          handleMessage(
-            msg,
-            (msg, cartId, store, correlationId, _) => {
-              client
-                .twin()
-                .forId(ThingId.of(s"io.github.pervasivecats:cart-$cartId-$store"))
-                .putAttribute("customer", JsonValue.nullLiteral())
-                .toCompletableFuture
-                .get()
-              client
-                .twin()
-                .forId(ThingId.of(s"io.github.pervasivecats:cart-$cartId-$store"))
-                .putAttribute("movable", true)
-                .toCompletableFuture
-                .get()
-              println(s"Cart with id cart-$cartId-$store has been unlocked")
-              sendReply(
-                msg,
-                correlationId,
-                HttpStatus.OK,
-                ResultResponseEntity(()).toJson.compactPrint
-              )
-            }
-          )
-      )
-    client
-      .live
-      .registerForMessage(
-        "ditto_actor_raiseAlarm",
+        "demo_raiseAlarm",
         "raiseAlarm",
         classOf[String],
         (msg: RepliableMessage[String, String]) =>
           handleMessage(
             msg,
+            MessageDirection.TO,
             (msg, cartId, store, correlationId, _) => {
-              println(s"Cart with id cart-$cartId-$store is raising its alarm")
+              println(s"! [DITTO 🛒] Cart with id cart-$cartId-$store is raising its alarm")
               sendReply(
                 msg,
                 correlationId,
@@ -178,6 +148,33 @@ object DittoSetup {
                 ResultResponseEntity(()).toJson.compactPrint
               )
             }
+          )
+      )
+      // Events responses sent to the device
+    client
+      .live
+      .registerForMessage(
+        "demo_itemInsertedIntoCart",
+        "itemInsertedIntoCart",
+        classOf[String],
+        (msg: RepliableMessage[String, String]) =>
+          handleMessage(
+            msg,
+            MessageDirection.FROM,
+            (_, cartId, store, _, _) => println(s"! [DITTO 🛒] Cart with thing id cart-$cartId-$store has now an item in it")
+          )
+      )
+    client
+      .live
+      .registerForMessage(
+        "demo_cartMoved",
+        "cartMoved",
+        classOf[String],
+        (msg: RepliableMessage[String, String]) =>
+          handleMessage(
+            msg,
+            MessageDirection.FROM,
+            (_, cartId, store, _, _) => println(s"! [DITTO 🛒] Cart with thing id cart-$cartId-$store was moved")
           )
       )
   }
