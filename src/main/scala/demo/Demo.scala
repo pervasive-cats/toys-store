@@ -46,9 +46,17 @@ import demo.Entity.*
 import demo.Requests.*
 import demo.Responses.*
 
+@SuppressWarnings(Array("org.wartremover.warts.ToString", "org.wartremover.warts.Throw", "scalafix:DisableSyntax.throw"))
 object Demo extends SprayJsonSupport {
 
-  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
+  private val cartUri = "http://localhost:8084/cart"
+  private val itemCategoryUri = "http://localhost:8083/item_category"
+  private val catalogItemUri = "http://localhost:8083/catalog_item"
+  private val itemUri = "http://localhost:8083/item"
+  private val customerUri = "http://localhost:8082/customer"
+
+  private val responsePrefix = ">> [RESPONSE] "
+
   private def initializeStore(
     httpClient: HttpExt,
     dittoClient: DittoClient,
@@ -61,17 +69,11 @@ object Demo extends SprayJsonSupport {
     // Cart addition
     println(">> [BEGIN] Cart addition, press enter after cart is added")
     val cartAdditionResponse = Await.result(
-      httpClient
-        .singleRequest(
-          Post(
-            "http://localhost:8084/cart",
-            CartAdditionEntity(store)
-          )
-        ),
+      httpClient.singleRequest(Post(cartUri, CartAdditionEntity(store))),
       5.minutes
     )
     val cart = Await.result(Unmarshal(cartAdditionResponse.entity).to[ResultResponseEntity[Cart]], 5.minutes).result
-    println(">> [RESPONSE] " + cart.toString)
+    println(responsePrefix + cart.toString)
     printCartState(dittoClient, cart.id, store)
     println(">> [END] Cart addition\n")
     println(">> [BEGIN] Item category addition")
@@ -79,66 +81,44 @@ object Demo extends SprayJsonSupport {
     val itemCategoryAdditionResponse = Await.result(
       httpClient
         .singleRequest(
-          Post(
-            "http://localhost:8083/item_category",
-            ItemCategoryAdditionEntity("Lego Bat-mobile", "A simple item in a store, nothing else.")
-          )
+          Post(itemCategoryUri, ItemCategoryAdditionEntity("Lego Bat-mobile", "A simple item in a store, nothing else."))
         ),
       5.minutes
     )
     val itemCategory =
       Await.result(Unmarshal(itemCategoryAdditionResponse.entity).to[ResultResponseEntity[ItemCategory]], 5.minutes).result
-    println(">> [RESPONSE] " + itemCategory.toString)
+    println(responsePrefix + itemCategory.toString)
     println(">> [END] Item category addition: press enter to continue")
     StdIn.readLine()
     println(">> [BEGIN] Catalog item addition")
     val catalogItemAdditionResponse = Await.result(
-      httpClient
-        .singleRequest(
-          Post(
-            "http://localhost:8083/catalog_item",
-            CatalogItemAdditionEntity(itemCategory.id, store, Price(59.99, "EUR"))
-          )
-        ),
+      httpClient.singleRequest(Post(catalogItemUri, CatalogItemAdditionEntity(itemCategory.id, store, Price(59.99, "EUR")))),
       5.minutes
     )
     val catalogItem =
       Await.result(Unmarshal(catalogItemAdditionResponse.entity).to[ResultResponseEntity[CatalogItem]], 5.minutes).result
-    println(">> [RESPONSE] " + catalogItem.toString)
+    println(responsePrefix + catalogItem.toString)
     println(">> [END] Catalog item addition: press enter to continue")
     StdIn.readLine()
     println(">> [BEGIN] First item addition")
     val firstItemId = 0
     val firstItemAdditionResponse = Await.result(
-      httpClient
-        .singleRequest(
-          Post(
-            "http://localhost:8083/item",
-            ItemAdditionEntity(firstItemId, catalogItem.id, store)
-          )
-        ),
+      httpClient.singleRequest(Post(itemUri, ItemAdditionEntity(firstItemId, catalogItem.id, store))),
       5.minutes
     )
     println(
-      ">> [RESPONSE] " +
+      responsePrefix +
       Await.result(Unmarshal(firstItemAdditionResponse.entity).to[ResultResponseEntity[Item]], 5.minutes).result.toString
     )
     println(">> [END] First item addition")
     println(">> [BEGIN] Second item addition")
     val secondItemId = 1
-    val secondItemAdditionResponse = Await
-      .result(
-        httpClient
-          .singleRequest(
-            Post(
-              "http://localhost:8083/item",
-              ItemAdditionEntity(secondItemId, catalogItem.id, store)
-            )
-          ),
-        5.minutes
-      )
+    val secondItemAdditionResponse = Await.result(
+      httpClient.singleRequest(Post(itemUri, ItemAdditionEntity(secondItemId, catalogItem.id, store))),
+      5.minutes
+    )
     println(
-      ">> [RESPONSE] " +
+      responsePrefix +
       Await.result(Unmarshal(secondItemAdditionResponse.entity).to[ResultResponseEntity[Item]], 5.minutes).result.toString
     )
     println(">> [END] Second item addition: press enter to continue")
@@ -146,23 +126,16 @@ object Demo extends SprayJsonSupport {
     (cart.id, itemCategory.id, catalogItem.id, firstItemId, secondItemId)
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   private def customerLogin(httpClient: HttpExt)(using ExecutionContext, ClassicActorSystem): (String, String) = {
     println(">> [BEGIN] Customer registration")
     val customer = "luigi@mail.com"
     val password = "Password1!"
     val customerRegistrationResponse = Await.result(
-      httpClient
-        .singleRequest(
-          Post(
-            "http://localhost:8082/customer",
-            CustomerRegistrationEntity(customer, "luigi", "Luigi", "Rossi", password)
-          )
-        ),
+      httpClient.singleRequest(Post(customerUri, CustomerRegistrationEntity(customer, "luigi", "Luigi", "Rossi", password))),
       5.minutes
     )
     println(
-      ">> [RESPONSE] " +
+      responsePrefix +
       Await
         .result(Unmarshal(customerRegistrationResponse.entity).to[ResultResponseEntity[Customer]], 5.minutes)
         .result
@@ -171,16 +144,11 @@ object Demo extends SprayJsonSupport {
     println(">> [END] Customer registration")
     println(">> [BEGIN] Customer login")
     val customerLoginResponse = Await.result(
-      httpClient.singleRequest(
-        Put(
-          "http://localhost:8082/customer/login",
-          CustomerLoginEntity(customer, password)
-        )
-      ),
+      httpClient.singleRequest(Put(customerUri + "/login", CustomerLoginEntity(customer, password))),
       5.minutes
     )
     println(
-      ">> [RESPONSE] " +
+      responsePrefix +
       Await
         .result(Unmarshal(customerLoginResponse.entity).to[ResultResponseEntity[Customer]], 5.minutes)
         .result
@@ -191,7 +159,6 @@ object Demo extends SprayJsonSupport {
     (customer, password)
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   private def associateCart(
     httpClient: HttpExt,
     dittoClient: DittoClient,
@@ -204,12 +171,7 @@ object Demo extends SprayJsonSupport {
     ClassicActorSystem
   ): Unit = {
     val cartAssociationResponse = Await.result(
-      httpClient.singleRequest(
-        Put(
-          "http://localhost:8084/cart/associate",
-          CartAssociationEntity(cartId, store, customer)
-        )
-      ),
+      httpClient.singleRequest(Put(cartUri + "/associate", CartAssociationEntity(cartId, store, customer))),
       5.minutes
     )
     println(
@@ -219,7 +181,6 @@ object Demo extends SprayJsonSupport {
     printCartState(dittoClient, cartId, store)
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   private def lockCart(
     httpClient: HttpExt,
     dittoClient: DittoClient,
@@ -231,12 +192,7 @@ object Demo extends SprayJsonSupport {
     ClassicActorSystem
   ): Unit = {
     val cartLockResponse = Await.result(
-      httpClient.singleRequest(
-        Put(
-          "http://localhost:8084/cart/lock",
-          CartLockEntity(cartId, store)
-        )
-      ),
+      httpClient.singleRequest(Put(cartUri + "/lock", CartLockEntity(cartId, store))),
       5.minutes
     )
     println(
@@ -245,7 +201,6 @@ object Demo extends SprayJsonSupport {
     printCartState(dittoClient, cartId, store)
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   private def showItem(
     client: HttpExt,
     itemId: Long,
@@ -259,19 +214,18 @@ object Demo extends SprayJsonSupport {
     val showItemResponse = Await.result(
       client.singleRequest(
         Get(
-          "http://localhost:8083/item",
+          itemUri,
           ItemShowEntity(itemId, kind, store)
         )
       ),
       5.minutes
     )
     println(
-      ">> [RESPONSE] "
+      responsePrefix
       + Await.result(Unmarshal(showItemResponse.entity).to[ResultResponseEntity[Item]], 5.minutes).result.toString
     )
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.ToString", "org.wartremover.warts.Throw", "scalafix:DisableSyntax.throw"))
   private def shutdown(
     httpClient: HttpExt,
     dittoClient: DittoClient,
@@ -291,16 +245,11 @@ object Demo extends SprayJsonSupport {
     // Customer de-registration
     println(">> [BEGIN] Customer de-registration")
     val customerDeregistrationResponse = Await.result(
-      httpClient.singleRequest(
-        Delete(
-          "http://localhost:8082/customer",
-          CustomerDeregistrationEntity(customer, password)
-        )
-      ),
+      httpClient.singleRequest(Delete(customerUri, CustomerDeregistrationEntity(customer, password))),
       5.minutes
     )
     println(
-      ">> [RESPONSE] " +
+      responsePrefix +
       Await.result(Unmarshal(customerDeregistrationResponse.entity).to[ResultResponseEntity[Unit]], 5.minutes).result.toString
     )
     println(">> [END] Customer de-registration")
@@ -309,14 +258,14 @@ object Demo extends SprayJsonSupport {
     val firstItemRemovalResponse = Await.result(
       httpClient.singleRequest(
         Delete(
-          "http://localhost:8083/item",
+          itemUri,
           ItemRemovalEntity(firstItemId, catalogItemId, store)
         )
       ),
       5.minutes
     )
     println(
-      ">> [RESPONSE] " +
+      responsePrefix +
       Await.result(Unmarshal(firstItemRemovalResponse.entity).to[ResultResponseEntity[Unit]], 5.minutes).result.toString
     )
     println(">> [END] First item removal")
@@ -324,62 +273,47 @@ object Demo extends SprayJsonSupport {
     val secondItemRemovalResponse = Await.result(
       httpClient.singleRequest(
         Delete(
-          "http://localhost:8083/item",
+          itemUri,
           ItemRemovalEntity(secondItemId, catalogItemId, store)
         )
       ),
       5.minutes
     )
     println(
-      ">> [RESPONSE] " +
+      responsePrefix +
       Await.result(Unmarshal(secondItemRemovalResponse.entity).to[ResultResponseEntity[Unit]], 5.minutes).result.toString
     )
     println(">> [END] Second item removal")
     // Catalog item removal
     println(">> [BEGIN] Catalog item removal started")
     val catalogItemRemovalResponse = Await.result(
-      httpClient.singleRequest(
-        Delete(
-          "http://localhost:8083/catalog_item",
-          CatalogItemRemovalEntity(catalogItemId, store)
-        )
-      ),
+      httpClient.singleRequest(Delete(catalogItemUri, CatalogItemRemovalEntity(catalogItemId, store))),
       5.minutes
     )
     println(
-      ">> [RESPONSE] " +
+      responsePrefix +
       Await.result(Unmarshal(catalogItemRemovalResponse.entity).to[ResultResponseEntity[Unit]], 5.minutes).result.toString
     )
     println(">> [END] Catalog item removal")
     // Item category removal
     println(">> [BEGIN] Item category removal")
     val itemCategoryRemovalResponse = Await.result(
-      httpClient.singleRequest(
-        Delete(
-          "http://localhost:8083/item_category",
-          ItemCategoryRemovalEntity(itemCategoryId)
-        )
-      ),
+      httpClient.singleRequest(Delete(itemCategoryUri, ItemCategoryRemovalEntity(itemCategoryId))),
       5.minutes
     )
     println(
-      ">> [RESPONSE] " +
+      responsePrefix +
       Await.result(Unmarshal(itemCategoryRemovalResponse.entity).to[ResultResponseEntity[Unit]], 5.minutes).result.toString
     )
     println(">> [END] Item category removal")
     println(">> [BEGIN] Cart removal")
     // Cart removal
     val cartRemovalResponse = Await.result(
-      httpClient.singleRequest(
-        Delete(
-          "http://localhost:8084/cart",
-          CartRemovalEntity(cartId, store)
-        )
-      ),
+      httpClient.singleRequest(Delete(cartUri, CartRemovalEntity(cartId, store))),
       5.minutes
     )
     println(
-      ">> [RESPONSE] "
+      responsePrefix
       + Await.result(Unmarshal(cartRemovalResponse.entity).to[ResultResponseEntity[Unit]], 5.minutes).result.toString
     )
     println(">> [END] Cart removal")
@@ -405,7 +339,6 @@ object Demo extends SprayJsonSupport {
     StdIn.readLine()
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   private def printCartState(client: DittoClient, cartId: Long, store: Long): Unit = {
     println("! [BEGIN] Cart state as digital twin in Ditto service")
     val thing =
