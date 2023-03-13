@@ -14,7 +14,7 @@ object AnyOps {
   extension [T](e: T) {
 
     @targetName("equals")
-    @SuppressWarnings(Array("org.wartremover.warts.Equals"))
+    @SuppressWarnings(Array("org.wartremover.warts.Equals", "scalafix:DisableSyntax.=="))
     def ===(other: T): Boolean = e == other
 
     @targetName("notEquals")

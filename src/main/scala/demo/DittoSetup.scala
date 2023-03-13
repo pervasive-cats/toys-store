@@ -9,6 +9,7 @@ package demo
 
 import scala.jdk.OptionConverters.*
 import scala.util.matching.Regex
+
 import org.eclipse.ditto.base.model.common.HttpStatus
 import org.eclipse.ditto.client.DittoClient
 import org.eclipse.ditto.client.DittoClients
@@ -21,7 +22,12 @@ import org.eclipse.ditto.client.options.Options
 import org.eclipse.ditto.json.JsonValue
 import org.eclipse.ditto.messages.model.MessageDirection
 import org.eclipse.ditto.things.model.ThingId
-import spray.json.{enrichAny, enrichString, JsNumber, JsString, JsValue}
+import spray.json.JsNumber
+import spray.json.JsString
+import spray.json.JsValue
+import spray.json.enrichAny
+import spray.json.enrichString
+
 import demo.Entity.*
 import AnyOps.===
 

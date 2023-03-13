@@ -7,33 +7,44 @@
 package io.github.pervasivecats
 package demo
 
-import demo.AnyOps.*
-import demo.Entity.*
-import demo.Requests.*
-import demo.Responses.{Cart, CatalogItem, Customer, Item, ItemCategory}
+import java.nio.ByteBuffer
+import java.util.concurrent.CompletionException
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.ExecutionException
+
+import scala.concurrent.Await
+import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.DurationInt
+import scala.io.StdIn
+import scala.jdk.OptionConverters.*
+import scala.util.Failure
+import scala.util.Success
 
 import akka.actor.ActorSystem as ClassicActorSystem
 import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.Behaviors
-import akka.http.scaladsl.{Http, HttpExt}
-import akka.http.scaladsl.client.RequestBuilding.{Delete, Post, Put}
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.HttpExt
+import akka.http.scaladsl.client.RequestBuilding.Delete
+import akka.http.scaladsl.client.RequestBuilding.Get
+import akka.http.scaladsl.client.RequestBuilding.Post
+import akka.http.scaladsl.client.RequestBuilding.Put
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import org.eclipse.ditto.base.model.common.HttpStatus
 import org.eclipse.ditto.client.DittoClient
 import org.eclipse.ditto.json.JsonObject
 import org.eclipse.ditto.messages.model.Message
-import org.eclipse.ditto.things.model.{Thing, ThingId}
+import org.eclipse.ditto.things.model.Thing
+import org.eclipse.ditto.things.model.ThingId
 import org.eclipse.ditto.things.model.signals.commands.exceptions.ThingNotAccessibleException
-import spray.json.{enrichAny, JsObject}
+import spray.json.JsObject
+import spray.json.enrichAny
 
-import java.nio.ByteBuffer
-import java.util.concurrent.{CompletionException, CountDownLatch, ExecutionException}
-import scala.concurrent.{Await, ExecutionContext}
-import scala.concurrent.duration.DurationInt
-import scala.io.StdIn
-import scala.jdk.OptionConverters.*
-import scala.util.{Failure, Success}
+import demo.AnyOps.*
+import demo.Entity.*
+import demo.Requests.*
+import demo.Responses.*
 
 object Demo extends SprayJsonSupport {
 
@@ -128,7 +139,7 @@ object Demo extends SprayJsonSupport {
       )
     println(
       ">> [RESPONSE] " +
-        Await.result(Unmarshal(secondItemAdditionResponse.entity).to[ResultResponseEntity[Item]], 5.minutes).result.toString
+      Await.result(Unmarshal(secondItemAdditionResponse.entity).to[ResultResponseEntity[Item]], 5.minutes).result.toString
     )
     println(">> [END] Second item addition: press enter to continue")
     StdIn.readLine()
@@ -234,7 +245,33 @@ object Demo extends SprayJsonSupport {
     printCartState(dittoClient, cartId, store)
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.ToString", "org.wartremover.warts.Throw"))
+  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
+  private def showItem(
+    client: HttpExt,
+    itemId: Long,
+    kind: Long,
+    store: Long
+  )(
+    using
+    ExecutionContext,
+    ClassicActorSystem
+  ): Unit = {
+    val showItemResponse = Await.result(
+      client.singleRequest(
+        Get(
+          "http://localhost:8083/item",
+          ItemShowEntity(itemId, kind, store)
+        )
+      ),
+      5.minutes
+    )
+    println(
+      ">> [RESPONSE] "
+      + Await.result(Unmarshal(showItemResponse.entity).to[ResultResponseEntity[Item]], 5.minutes).result.toString
+    )
+  }
+
+  @SuppressWarnings(Array("org.wartremover.warts.ToString", "org.wartremover.warts.Throw", "scalafix:DisableSyntax.throw"))
   private def shutdown(
     httpClient: HttpExt,
     dittoClient: DittoClient,
@@ -284,7 +321,7 @@ object Demo extends SprayJsonSupport {
     )
     println(">> [END] First item removal")
     println(">> [BEGIN] Second item removal started")
-    val secondItemRemovalEntity = Await.result(
+    val secondItemRemovalResponse = Await.result(
       httpClient.singleRequest(
         Delete(
           "http://localhost:8083/item",
@@ -295,12 +332,12 @@ object Demo extends SprayJsonSupport {
     )
     println(
       ">> [RESPONSE] " +
-      Await.result(Unmarshal(secondItemRemovalEntity.entity).to[ResultResponseEntity[Unit]], 5.minutes).result.toString
+      Await.result(Unmarshal(secondItemRemovalResponse.entity).to[ResultResponseEntity[Unit]], 5.minutes).result.toString
     )
     println(">> [END] Second item removal")
     // Catalog item removal
     println(">> [BEGIN] Catalog item removal started")
-    val catalogItemRemovalEntity = Await.result(
+    val catalogItemRemovalResponse = Await.result(
       httpClient.singleRequest(
         Delete(
           "http://localhost:8083/catalog_item",
@@ -311,12 +348,12 @@ object Demo extends SprayJsonSupport {
     )
     println(
       ">> [RESPONSE] " +
-      Await.result(Unmarshal(catalogItemRemovalEntity.entity).to[ResultResponseEntity[Unit]], 5.minutes).result.toString
+      Await.result(Unmarshal(catalogItemRemovalResponse.entity).to[ResultResponseEntity[Unit]], 5.minutes).result.toString
     )
     println(">> [END] Catalog item removal")
     // Item category removal
     println(">> [BEGIN] Item category removal")
-    val itemCategoryRemovalEntity = Await.result(
+    val itemCategoryRemovalResponse = Await.result(
       httpClient.singleRequest(
         Delete(
           "http://localhost:8083/item_category",
@@ -327,12 +364,12 @@ object Demo extends SprayJsonSupport {
     )
     println(
       ">> [RESPONSE] " +
-      Await.result(Unmarshal(itemCategoryRemovalEntity.entity).to[ResultResponseEntity[Unit]], 5.minutes).result.toString
+      Await.result(Unmarshal(itemCategoryRemovalResponse.entity).to[ResultResponseEntity[Unit]], 5.minutes).result.toString
     )
     println(">> [END] Item category removal")
     println(">> [BEGIN] Cart removal")
     // Cart removal
-    val cartRemovalEntity = Await.result(
+    val cartRemovalResponse = Await.result(
       httpClient.singleRequest(
         Delete(
           "http://localhost:8084/cart",
@@ -343,7 +380,7 @@ object Demo extends SprayJsonSupport {
     )
     println(
       ">> [RESPONSE] "
-      + Await.result(Unmarshal(cartRemovalEntity.entity).to[ResultResponseEntity[Unit]], 5.minutes).result.toString
+      + Await.result(Unmarshal(cartRemovalResponse.entity).to[ResultResponseEntity[Unit]], 5.minutes).result.toString
     )
     println(">> [END] Cart removal")
     println("! [BEGIN] Cart missing as digital twin in Ditto service")
@@ -359,7 +396,7 @@ object Demo extends SprayJsonSupport {
       case c: ExecutionException =>
         c.getCause match {
           case t: ThingNotAccessibleException if t.getHttpStatus === HttpStatus.NOT_FOUND =>
-            println(s"! [RESPONSE] Cart not found")
+            println("! [RESPONSE] Cart not found")
           case _ => throw IllegalStateException()
         }
       case _ => throw IllegalStateException()
@@ -445,6 +482,7 @@ object Demo extends SprayJsonSupport {
       .payload(JsObject("catalogItem" -> catalogItemId.toJson, "itemId" -> firstItemId.toJson).compactPrint)
       .send()
     StdIn.readLine()
+    showItem(httpClient, firstItemId, catalogItemId, store)
     println("> [END] Customer inserts item into cart\n\n")
 
     // First item removal with drop system

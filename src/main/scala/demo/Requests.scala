@@ -74,4 +74,8 @@ object Requests extends DefaultJsonProtocol {
   final case class CartRemovalEntity(id: Long, store: Long)
 
   given RootJsonFormat[CartRemovalEntity] = jsonFormat2(CartRemovalEntity.apply)
+
+  final case class ItemShowEntity(id: Long, kind: Long, store: Long)
+
+  given RootJsonFormat[ItemShowEntity] = jsonFormat3(ItemShowEntity.apply)
 }
