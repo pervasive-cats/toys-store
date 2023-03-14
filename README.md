@@ -1,10 +1,10 @@
-# toys-store-stores
+# toys-store
 
-[![Build status](https://github.com/pervasive-cats/toys-store-stores/actions/workflows/release.yml/badge.svg)](https://github.com/pervasive-cats/toys-store-stores/actions/workflows/release.yml)
+[![Build status](https://github.com/pervasive-cats/toys-store/actions/workflows/release.yml/badge.svg)](https://github.com/pervasive-cats/toys-store/actions/workflows/release.yml)
 [![semantic-release: conventional-commits](https://img.shields.io/badge/semantic--release-conventional_commits-e10098?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
-[![Latest release](https://img.shields.io/github/v/release/pervasive-cats/toys-store-stores)](https://github.com/pervasive-cats/toys-store-stores/releases/latest/)
-[![Issues](https://img.shields.io/github/issues/pervasive-cats/toys-store-stores)](https://github.com/pervasive-cats/toys-store-stores/issues)
-[![Pull requests](https://img.shields.io/github/issues-pr/pervasive-cats/toys-store-stores)](https://github.com/pervasive-cats/toys-store-stores/pulls)
+[![Latest release](https://img.shields.io/github/v/release/pervasive-cats/toys-store)](https://github.com/pervasive-cats/toys-store/releases/latest/)
+[![Issues](https://img.shields.io/github/issues/pervasive-cats/toys-store)](https://github.com/pervasive-cats/toys-store/issues)
+[![Pull requests](https://img.shields.io/github/issues-pr/pervasive-cats/toys-store)](https://github.com/pervasive-cats/toys-store/pulls)
 
 ## Copyright Statement
 
