@@ -33,7 +33,7 @@ lazy val root = project
       ditto
     ),
     wartremoverErrors ++= Warts.allBut(Wart.ImplicitParameter),
-    version := "0.0.0",
+    version := "1.0.0",
     headerLicense := Some(
       HeaderLicense.Custom(
         """|Copyright © 2022-2023 by Pervasive Cats S.r.l.s.
