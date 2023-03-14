@@ -29,8 +29,8 @@ plugins:
           countMatches: true
         - files:
             - package-lock.json
-          from: '\"name\": \"toys-store-stores\",\n  \"version\": \".*\"'
-          to: "\"name\": \"toys-store-stores\",\n  \"version\": \"${nextRelease.version}\""
+          from: '\"name\": \"toys-store\",\n  \"version\": \".*\"'
+          to: "\"name\": \"toys-store\",\n  \"version\": \"${nextRelease.version}\""
           results:
             - file: package-lock.json
               hasChanged: true
@@ -39,8 +39,8 @@ plugins:
           countMatches: true
         - files:
             - package-lock.json
-          from: '\"name\": \"toys-store-stores\",\n      \"version\": \".*\"'
-          to: "\"name\": \"toys-store-stores\",\n      \"version\": \"${nextRelease.version}\""
+          from: '\"name\": \"toys-store\",\n      \"version\": \".*\"'
+          to: "\"name\": \"toys-store\",\n      \"version\": \"${nextRelease.version}\""
           results:
             - file: package-lock.json
               hasChanged: true
