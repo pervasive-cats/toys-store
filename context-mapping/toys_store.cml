@@ -1,0 +1,49 @@
+import "users_context.cml"
+import "items_context.cml"
+import "carts_context.cml"
+import "payments_context.cml"
+import "stores_context.cml"
+import "shopping_context.cml"
+
+ContextMap ToysStoreContextMap {
+    type SYSTEM_LANDSCAPE
+    state AS_IS
+
+    contains UsersContext, ItemsContext, CartsContext, ShoppingContext, PaymentsContext, StoresContext
+
+    ShoppingContext [U, OHS, PL]->[D, ACL] UsersContext {
+        implementationTechnology "Akka Cluster"
+    }
+
+    CartsContext [U, OHS, PL]->[D, ACL] UsersContext {
+        implementationTechnology "Akka Cluster"
+    }
+
+    PaymentsContext [U, OHS, PL]->[D, ACL] UsersContext {
+        implementationTechnology "Akka Cluster"
+    }
+
+    CartsContext [P]<->[P] ShoppingContext {
+        implementationTechnology "Akka Cluster"
+    }
+
+    ItemsContext [U, OHS, PL]->[D, ACL] CartsContext {
+        implementationTechnology "Akka Cluster"
+    } 
+
+    ItemsContext [U, OHS, PL]->[D, ACL] StoresContext {
+        implementationTechnology "Akka Cluster"
+    }
+
+    ItemsContext [P]<->[P] ShoppingContext {
+        implementationTechnology "Akka Cluster"
+    }
+
+    ShoppingContext [U, OHS, PL]->[D, ACL] StoresContext {
+        implementationTechnology "Akka Cluster"
+    }
+
+    PaymentsContext [U, OHS, PL]->[D, ACL] ShoppingContext {
+        implementationTechnology "Akka Cluster"
+    }
+}

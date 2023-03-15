@@ -1,0 +1,162 @@
+import "domain.cml"
+
+BoundedContext ShoppingContext implements ShoppingDomain {
+    type FEATURE
+    knowledgeLevel CONCRETE
+    domainVisionStatement "Bounded context responsible for managing the shopping process which allows a customer to shop in a store."
+    implementationTechnology "Akka actor"
+    responsibilities "Shopping Process", "Cart Contents"
+
+    Aggregate ShoppingProcess {
+
+        abstract Entity ShoppingProcess {
+            aggregateRoot
+
+            - Customer customer
+
+            Repository ShoppingProcessRepository {
+
+                @ShoppingProcess findByCustomer(@Customer customer);
+
+                boolean existsShoppingProcessWithItem(@Store store, @CatalogItem catalogItem, @ItemId itemId);
+
+                void add(@NotStartedShoppingProcess notStartedShoppingProcess);
+
+                void ^update(@ShoppingProcess shoppingProcess);
+            }
+        }
+
+        Entity NotStartedShoppingProcess extends ShoppingProcess {
+
+            def @StartingShoppingProcess customerEntersStore(@Store store);
+        }
+
+        Entity StartingShoppingProcess extends ShoppingProcess {
+            - Store store
+
+            def @StartedShoppingProcess associateCart(@Cart cart);
+
+            def @NotStartedShoppingProcess cancel();
+        }
+
+        Entity StartedShoppingProcess extends ShoppingProcess {
+            - Store store
+            - Cart cart
+            - List<@Item> cartContents
+
+            def @StartedShoppingProcess addItemToCart(@Item item);
+
+            def @StartedShoppingProcess removeItemFromCart(@Item item);
+
+            def @TerminatingShoppingProcess customerLeavesStore();
+
+            def @NotStartedShoppingProcess cancel();
+        }
+
+        Entity TerminatingShoppingProcess extends ShoppingProcess {
+
+            def @TerminatedShoppingProcess timeoutIsReached();
+
+            def @NotStartedShoppingProcess cancel();
+        }
+
+        Entity TerminatedShoppingProcess extends ShoppingProcess {
+
+            def @NotStartedShoppingProcess customerPaid();
+
+            def @NotStartedShoppingProcess cancel();
+        }
+
+        ValueObject Customer {
+            String ^email
+        }
+
+        ValueObject Store {
+            long id
+        }
+
+        ValueObject Cart {
+            long id
+        }
+
+        ValueObject Item {
+            - CatalogItem catalogItem
+            - ItemId itemId
+            - Count count
+        }
+
+        ValueObject CatalogItem {
+            long id
+        }
+
+        ValueObject ItemId {
+            long id
+        }
+
+        ValueObject Count {
+            int count
+        }
+
+        DomainEvent CustomerHasEnteredStore {
+            - Customer customer
+            - Store store
+        }
+
+        DomainEvent CartAssociated {
+            - Customer customer
+            - Cart cart
+            - Store store
+        }
+
+        DomainEvent CustomerHasLeftStore {
+            - Customer customer
+        }
+
+        DomainEvent TimeoutWasReached {
+            - Customer customer
+        }
+
+        DomainEvent CustomerHasPaid {
+            - Customer customer
+        }
+
+        DomainEvent ItemAddedToCart {
+            - Customer customer
+            - CatalogItem catalogItem
+            - ItemId itemId
+            - Store store
+        }
+
+        DomainEvent ItemReturned {
+            - Store store
+            - CatalogItem catalogItem
+            - ItemId itemId
+        }
+
+        DomainEvent CustomerUnregistered {
+            - Customer customer
+        }
+
+        Service ShoppingProcessHandlers {
+
+            void onCustomerHasEnteredStore(@CustomerHasEnteredStore ^event);
+            
+            void onCartAssociated(@CartAssociated ^event);
+            
+            void onCustomerHasLeftStore(@CustomerHasLeftStore ^event);
+
+            void onTimeoutWasReached(@TimeoutWasReached ^event);
+
+            void onCustomerHasPaid(@CustomerHasPaid ^event);
+
+            void onItemAddedToCart(@ItemAddedToCart ^event);
+            
+            void onItemReturned(@ItemReturned ^event);
+        }
+
+        Service CustomerStateHandlers {
+
+            void onCustomerUnregistered(@CustomerUnregistered ^event);
+        }
+    }
+}

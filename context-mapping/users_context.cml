@@ -1,0 +1,125 @@
+import "domain.cml"
+
+BoundedContext UsersContext implements UsersDomain {
+    type FEATURE
+    knowledgeLevel CONCRETE
+    domainVisionStatement "Bounded context responsible for user data management: users creation, deletion and data update. Support to user login and logout, while keeping login session."
+    implementationTechnology "Akka actor"
+    responsibilities "Customers", "Store Managers", "Administration"
+
+    Aggregate User {
+
+        abstract Entity User {
+            aggregateRoot
+
+            - Username username
+
+            def boolean verifyPassword(@PlainPassword password);
+        }
+
+        ValueObject Username {
+            String username
+        }
+
+        ValueObject PlainPassword {
+            String plainPassword
+        }
+
+        ValueObject EncryptedPassword {
+            String encryptedPassword
+        }
+
+        Service PasswordAlgorithm {
+
+            boolean verify(@EncryptedPassword expectedPassword, @PlainPassword actualPassword);
+
+            @EncryptedPassword encrypt(@PlainPassword plainPassword);
+        }
+    }
+
+    Aggregate Customer {
+
+        Entity Customer extends User {
+            aggregateRoot
+
+            - NameComponent firstName
+            - NameComponent lastName
+            - Email ^email
+
+            def @Customer updated(@Email ^email, @NameComponent firstName, @NameComponent lastName, @Username username);
+
+            Repository CustomerRepository {
+
+                @Customer findByEmail(@Email ^email);
+
+                @EncryptedPassword findPassword(@Customer customer);
+
+                void register(@Customer customer, @EncryptedPassword password);
+
+                void updateData(@Customer customer, @NameComponent firstName, @NameComponent lastName, @Email ^email, @Username username);
+
+                void updatePassword(@Customer customer, @EncryptedPassword password);
+
+                void unregister(@Customer customer);
+            }
+        }
+
+        ValueObject Email {
+            String ^email
+        }
+
+        ValueObject NameComponent {
+            String nameComponent
+        }
+
+        DomainEvent CustomerUnregistered {
+            - Email ^email
+        }
+    }
+
+    Aggregate StoreManager {
+
+        Entity StoreManager extends User {
+            aggregateRoot
+
+            - Store store
+
+            def @StoreManager updateStore(@Store store);
+
+            Repository StoreManagerRepository {
+
+                @StoreManager findByUsername(@Username username);
+
+                @EncryptedPassword findPassword(@StoreManager storeManager);
+
+                void register(@StoreManager storeManager, @EncryptedPassword password);
+
+                void updateStore(@StoreManager storeManager, @Store store);
+
+                void updatePassword(@StoreManager storeManager, @EncryptedPassword password);
+
+                void unregister(@StoreManager storeManager);
+            }
+        }
+
+        ValueObject Store {
+            long id
+        }
+    }
+
+    Aggregate Administration {
+
+        Entity Administration extends User {
+            aggregateRoot
+
+            Repository AdministrationRepository {
+
+                @Administration findByUsername(@Username username);
+
+                @EncryptedPassword findPassword(@Administration administration);
+
+                void updatePassword(@Administration administration, @EncryptedPassword password);
+            }
+        }
+    }
+}

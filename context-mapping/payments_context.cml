@@ -1,0 +1,175 @@
+import "domain.cml"
+
+BoundedContext PaymentsContext implements PaymentsDomain {
+    type FEATURE
+    knowledgeLevel CONCRETE
+    domainVisionStatement "Bounded context responsible for managing payments by customers for purchases."
+    implementationTechnology "Akka actor"
+    responsibilities "Purchases", "Payments"
+
+    Aggregate Customer {
+
+        Entity Customer {
+            aggregateRoot
+
+            - Email ^email
+            - PaymentCard paymentCard
+
+            def @Customer updated(@Email ^email, @PaymentCard paymentCard);
+
+            Repository CustomerRepository {
+
+                @Customer findByEmail(@Email ^email);
+
+                void register(@Customer customer);
+
+                void ^update(@Customer customer, @Email ^email, @PaymentCard paymentCard);
+
+                void unregister(@Customer customer);
+            }
+        }
+
+        ValueObject Email {
+            String ^email
+        }
+
+        ValueObject PaymentCard {
+            - CardNumber cardNumber
+            - CardSecurityCode cardSecurityCode
+            - CardHolder cardHolder
+        }
+
+        ValueObject CardNumber {
+            String cardNumber
+        }
+
+        ValueObject CardSecurityCode {
+            String cardSecurityCode
+        }
+
+        ValueObject CardHolder {
+            String cardHolder
+        }
+
+        DomainEvent CustomerUnregistered {
+            - Email ^email
+        }
+
+        Service CustomerStateHandlers {
+
+            void onCustomerUnregistered(@CustomerUnregistered ^event);
+        }
+    }
+
+    Aggregate Purchase {
+
+        Entity Purchase {
+            aggregateRoot
+
+            - PurchaseId purchaseId
+            - List<CatalogItem> cartContents
+            - Store store
+            - Customer customer
+            Timestamp timestamp
+
+            Repository PurchaseRepository {
+
+                @Purchase findById(@PurchaseId id);
+
+                List<@Purchase> findByEmail(@Email ^email);
+
+                List<@Purchase> findByStore(@Store store);
+
+                List<@Purchase> findByDateRange(Timestamp startDate, Timestamp endDate);
+
+                @Purchase add(List<@CatalogItem> cartContents, @Store store, @Customer customer);
+
+                void remove(@Purchase purchase);
+            }
+        }
+
+        ValueObject PurchaseId {
+            long id
+        }
+
+        ValueObject Store {
+            long id
+        }
+
+        ValueObject CatalogItem {
+            - CatalogItemId catalogItemId
+            - Cost cost
+        }
+
+        ValueObject CatalogItemId {
+            long id
+        }
+
+        ValueObject Cost {
+            - Amount amount
+            - Currency currency
+        }
+
+        ValueObject Amount {
+            double amount
+        }
+
+        ValueObject Currency
+    }
+
+    Aggregate Payment {
+
+        abstract Entity Payment {
+            aggregateRoot
+
+            - PaymentId paymentId
+            - Purchase purchase
+            Timestamp timestamp
+
+            Repository PaymentRepository {
+
+                @Payment findById(@PaymentId id);
+
+                List<@Payment> findByCustomer(@Email ^email);
+
+                List<@Purchase> findByDateRange(Timestamp startDate, Timestamp endDate);
+
+                @Payment add(@Purchase purchase);
+
+                void remove(@Purchase purchase);
+            }
+        }
+
+        Entity StartedPayment extends Payment {
+
+            def @SuccessfulPayment payWithSuccess();
+
+            def @FailedPayment payWithFailure();
+        }
+
+        abstract Entity TerminatedPayment extends Payment
+
+        Entity SuccessfulPayment extends TerminatedPayment
+
+        Entity FailedPayment extends TerminatedPayment
+
+        ValueObject PaymentId {
+            long id
+        }
+
+        DomainEvent PaymentSucceeded {
+            - PaymentId paymentId
+        }
+
+        DomainEvent PaymentFailed {
+            - PaymentId paymentId
+        }
+
+        Service PaymentTerminationHandlers {
+
+            void onPaymentSucceeded(@PaymentSucceeded ^event);
+
+            void onPaymentFailed(@PaymentFailed ^event);
+        }
+    }
+}

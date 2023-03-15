@@ -1,0 +1,178 @@
+import "domain.cml"
+
+BoundedContext StoresContext implements StoresDomain {
+    type FEATURE
+    knowledgeLevel CONCRETE
+    domainVisionStatement "Bounded context responsible for shops: layout, anti-theft system and drop system."
+    implementationTechnology "Akka actor"
+    responsibilities "Stores", "Anti-theft System", "Drop System", "Shelvings Groups", "Shelvings", "Shelves", "Items Rows"
+
+    Aggregate Store {
+
+        Entity Store {
+            aggregateRoot
+
+            - StoreId storeId
+            - List<ShelvingGroup> layout
+
+            def @Store addShelvingGroup(@ShelvingGroup shelvingGroup);
+
+            def @Store removeShelvingGroup(@ShelvingGroupId shelvingGroupId);
+
+            def @Store updateShelvingGroup(@ShelvingGroup shelvingGroup);
+
+            Repository StoresRepository {
+
+                @Store findById(@StoreId storeId);
+
+                void updateLayout(@Store store, List<@ShelvingGroup> layout);
+            }
+        }
+
+        ValueObject StoreId {
+            long id
+        }
+
+        ValueObject ShelvingGroup {
+
+            - ShelvingGroupId shelvingGroupId
+            - List<Shelving> shelvings
+
+            def @ShelvingGroup addShelving(@Shelving shelving);
+
+            def @ShelvingGroup removeShelving(@ShelvingId shelvingId);
+
+            def @ShelvingGroup updateShelving(@Shelving shelving);
+        }
+
+        ValueObject ShelvingGroupId {
+            long id
+        }
+
+        ValueObject Shelving {
+
+            - ShelvingId shelvingId
+            - List<Shelf> shelves
+
+            def @Shelving addShelf(@Shelf shelf);
+
+            def @Shelving removeShelf(@ShelfId shelfId);
+
+            def @Shelving updateShelf(@ShelfId shelfId);
+        }
+
+        ValueObject ShelvingId {
+            long id
+        }
+
+        ValueObject Shelf {
+
+            - ShelfId shelfId
+            - List<ItemsRow> itemsRows
+
+            def @Shelf addItemsRow(@ItemsRow itemsRow);
+
+            def @Shelf removeItemsRow(@ItemsRowId itemsRowId);
+
+            def @Shelf updateItemsRow(@ItemsRow itemsRow);
+        }
+
+        ValueObject ShelfId {
+            long id
+        }
+
+        ValueObject ItemsRow {
+
+            - ItemsRowId itemsRowId
+            - CatalogItem catalogItem
+            - Count count
+
+            def @ItemsRow updated(@CatalogItem catalogItem, @Count count);
+        }
+
+        ValueObject ItemsRowId {
+            long id
+        }
+
+        ValueObject CatalogItem {
+            long id
+        }
+
+        ValueObject Count {
+            int count
+        }
+
+        ValueObject Item {
+            - CatalogItem catalogItem
+            - ItemId id
+        }
+
+        ValueObject ItemId {
+            long id
+        }
+
+        DomainEvent ItemInsertedInDropSystem {
+            - CatalogItem catalogItem
+            - ItemId id
+            - StoreId storeId
+        }
+
+        DomainEvent ItemReturned {
+            - CatalogItem catalogItem
+            - ItemId id
+            - StoreId storeId
+        }
+
+        DomainEvent ItemPutInPlace {
+            - StoreId storeId
+            - CatalogItem catalogItem
+            - ItemId id
+        }
+
+        DomainEvent CatalogItemLiftingRegistered {
+            - StoreId storeId
+            - ShelvingGroupId shelvingGroupId
+            - ShelvingId shelvingId
+            - ShelfId shelfId
+            - ItemsRowId itemsRowId
+        }
+
+        DomainEvent CatalogItemLifted {
+            - CatalogItem catalogItem
+            - StoreId storeId
+        }
+
+        DomainEvent CatalogItemPutInPlace {
+            - CatalogItem catalogItem
+            - StoreId storeId
+        }
+
+        DomainEvent ItemDetected {
+            - ItemId itemId
+            - CatalogItem catalogItem
+            - StoreId storeId
+        }
+
+        DomainEvent AntiTheftSystemAlarmTriggered {
+            - StoreId storeId
+        }
+
+        Service LayoutManagers {
+
+            boolean existsLayoutWithItem(@StoreId storeId, @CatalogItem catalogItem, @Item item);
+
+            void putCatalogItemInPlace(@StoreId storeId, @CatalogItem catalogItem);
+        }
+
+        Service ItemStateHandlers {
+
+            void onItemInserted(@ItemInsertedInDropSystem ^event);
+
+            void onItemReturned(@ItemReturned ^event);
+
+            void onCatalogItemLiftingRegistered(@CatalogItemLiftingRegistered ^event);
+
+            void onItemDetected(@ItemDetected ^event);
+        }
+    }
+}

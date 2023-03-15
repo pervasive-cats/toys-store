@@ -1,0 +1,114 @@
+import "domain.cml"
+
+BoundedContext CartsContext implements CartsDomain {
+    type FEATURE
+    knowledgeLevel CONCRETE
+    domainVisionStatement "Bounded context responsible for managing smart carts state."
+    implementationTechnology "Akka actor"
+    responsibilities "Carts"
+
+    Aggregate Cart {
+
+        abstract Entity Cart {
+            aggregateRoot
+
+            - CartId cartId
+            - Store store
+            boolean movable
+
+            Repository CartRepository {
+
+                @Cart findById(@CartId cartId, @Store store);
+
+                Set<@Cart> findByStore(@Store store);
+
+                @LockedCart add(@Store store, boolean movable);
+
+                void ^update(@Cart cart);
+
+                void remove(@Cart cart);
+            }
+        }
+
+        Entity LockedCart extends Cart {
+
+            def @UnlockedCart unlock();
+
+            def @AssociatedCart associateTo(@Customer customer);
+        }
+
+        Entity UnlockedCart extends Cart {
+
+            def @LockedCart lock();
+
+            def @AssociatedCart associateTo(@Customer customer);
+        }
+
+        Entity AssociatedCart extends Cart {
+
+            - Customer customer
+
+            def @LockedCart lock();
+        }
+
+        ValueObject CartId {
+            long id
+        }
+
+        ValueObject Store {
+            long id
+        }
+
+        ValueObject Customer {
+            String ^email
+        }
+
+        ValueObject Item {
+            - CatalogItem catalogItem
+            - ItemId id
+        }
+
+        ValueObject CatalogItem {
+            long id
+        }
+
+        ValueObject ItemId {
+            long id
+        }
+
+        DomainEvent CartAssociated {
+            - CartId cartId
+            - Store store
+            - Customer customer
+        }
+
+        DomainEvent ItemInsertedIntoCart {
+            - CartId cartId
+            - Store store
+            - CatalogItem catalogItem
+            - ItemId id
+        }
+
+        DomainEvent ItemAddedToCart {
+            - Customer customer
+            - Store store
+            - CatalogItem catalogItem
+            - ItemId id
+        }
+
+        DomainEvent CartMoved {
+            - CartId cartId
+            - Store store
+        }
+
+        Service ItemInsertionHandlers {
+
+            void onItemInsertedIntoCart(@ItemInsertedIntoCart ^event);
+        }
+
+        Service CartMovementHandlers {
+
+            void onCartMoved(@CartMoved ^event);
+        }
+    }
+}

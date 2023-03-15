@@ -1,0 +1,201 @@
+import "domain.cml"
+
+BoundedContext ItemsContext implements ItemsDomain {
+    type FEATURE
+    knowledgeLevel CONCRETE
+    domainVisionStatement "Bounded context responsible for keeping information about items sold in different stores."
+    implementationTechnology "Akka actor"
+    responsibilities "Item Categories", "Catalog Items", "Items"
+
+    Aggregate ItemCategory {
+
+        Entity ItemCategory {
+            aggregateRoot
+
+            - ItemCategoryId id
+            - Name name
+            - Description description
+
+            def @ItemCategory updated(@Name name, @Description description);
+
+            Repository ItemCategoryRepository {
+
+                @ItemCategory findById(@ItemCategoryId id);
+
+                @ItemCategory add(@Name name, @Description description);
+
+                void ^update(@ItemCategory itemCategory, @Name name, @Description description);
+
+                void remove(@ItemCategory itemCategory);
+            }
+        }
+
+        ValueObject ItemCategoryId {
+            long id
+        }
+
+        ValueObject Name {
+            String name
+        }
+
+        ValueObject Description {
+            String description
+        }
+    }
+
+    Aggregate CatalogItem {
+
+        abstract Entity CatalogItem {
+            aggregateRoot
+
+            - CatalogItemId id
+            - ItemCategory category
+            - Store store
+            - Price price
+
+            Repository CatalogItemRepository {
+
+                @CatalogItem findById(@CatalogItemId catalogItemId, @Store store);
+
+                Set<@LiftedCatalogItem> findAllLifted();
+
+                @InPlaceCatalogItem add(@ItemCategory category, @Store store, @Price price);
+
+                void ^update(@CatalogItem catalogItem, @Count count, @Price price);
+
+                void remove(@CatalogItem catalogItem);
+            }
+        }
+
+        Entity InPlaceCatalogItem extends CatalogItem {
+
+            def @CatalogItem updated(@Price price);
+
+            def @LiftedCatalogItem lift();
+        }
+
+        Entity LiftedCatalogItem extends CatalogItem {
+
+            - @Count count
+            
+            def @CatalogItem updated(@Count count, @Price price);
+
+            def @CatalogItem putInPlace();
+        }
+
+        ValueObject CatalogItemId {
+            long id
+        }
+
+        ValueObject Store {
+            long id
+        }
+
+        ValueObject Price {
+            - Amount amount
+            - Currency currency
+        }
+
+        ValueObject Amount {
+            double amount
+        }
+
+        ValueObject Currency
+        
+        ValueObject Count {
+            long count
+        }
+
+        DomainEvent CatalogItemPutInPlace {
+            - CatalogItemId catalogItemId
+            - Store store
+        }
+
+        DomainEvent CatalogItemLifted {
+            - CatalogItemId catalogItemId
+            - Store store
+        }
+
+        Service CatalogItemStateHandlers {
+
+            void onCatalogItemPutInPlace(@CatalogItemPutInPlace ^event);
+
+            void onCatalogItemLifted(@CatalogItemLifted ^event);
+        }
+    }
+
+    Aggregate Item {
+
+        abstract Entity Item {
+            aggregateRoot
+
+            - ItemId id
+            - CatalogItem kind
+
+            Repository ItemRepository {
+
+                @Item findById(@ItemId itemId, @CatalogItemId catalogItemId, @Store store);
+
+                Set<@ReturnedItem> findAllReturned();
+
+                void add(@InPlaceItem inPlaceItem);
+
+                void ^update(@Item item);
+
+                void remove(@Item item);
+            }
+        }
+
+        Entity InPlaceItem extends Item {
+
+            def @InCartItem putInCart();
+        }
+
+        Entity InCartItem extends Item {
+            - Customer customer
+
+            def @ReturnedItem returnToStore();
+        }
+
+        Entity ReturnedItem extends Item {
+
+            def @InPlaceItem putInPlace();
+        }
+
+        ValueObject ItemId {
+            long id
+        }
+
+        ValueObject Customer {
+            String ^email
+        }
+
+        DomainEvent ItemAddedToCart {
+            - CatalogItemId catalogItemId
+            - Store store
+            - ItemId itemId
+            - Customer customer
+        }
+
+        DomainEvent ItemReturned {
+            - CatalogItemId catalogItemId
+            - Store store
+            - ItemId itemId
+        }
+
+        DomainEvent ItemPutInPlace {
+            - CatalogItemId catalogItemId
+            - Store store
+            - ItemId itemId
+        }
+
+        Service ItemStateHandlers {
+
+            void onItemAddedToCart(@ItemAddedToCart ^event);
+
+            void onItemReturned(@ItemReturned ^event);
+
+            void onItemPutInPlace(@ItemPutInPlace ^event);
+        }
+    }
+}

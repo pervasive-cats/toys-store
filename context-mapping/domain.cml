@@ -1,0 +1,32 @@
+Domain ToysStore {
+
+	Subdomain ShoppingDomain {
+		type = CORE_DOMAIN
+		domainVisionStatement = "Subdomain responsible for managing the customers' shopping process."
+	}
+    
+    Subdomain UsersDomain {
+		type = SUPPORTING_DOMAIN
+		domainVisionStatement = "Subdomain responsible for managing users and their sessions."
+	}
+
+	Subdomain ItemsDomain {
+		type = SUPPORTING_DOMAIN
+		domainVisionStatement = "Subdomain responsible for managing items to be sold."
+	}
+
+	Subdomain CartsDomain {
+		type = SUPPORTING_DOMAIN
+		domainVisionStatement = "Subdomain responsible for managing smart carts."
+	}
+
+	Subdomain StoresDomain {
+		type = CORE_DOMAIN
+		domainVisionStatement = "Subdomain responsible for managing stores."
+	}
+
+	Subdomain PaymentsDomain {
+		type = GENERIC_SUBDOMAIN
+		domainVisionStatement = "Subdomain responsible for interfacing with a third-party payment processing service."
+	}
+}
