@@ -48,7 +48,7 @@ settore _sales_ di Toys Store, e infine il responsabile per il committente, ovve
 
 Il risultato dell'applicazione di questa tecnica è visibile dai seguenti schemi, così come estrapolati da Miro.
 
-![Domain storytelling relativo all'acquisto di un prodotto](/toys-store/images/DS1.jpg)
+![Domain storytelling relativo all'acquisto di un prodotto](/toys-store/assets/images/DS1.jpg)
 
 L'acquisto di un prodotto inizia con l'ingresso del cliente, il quale comunica così al sistema negozio la sua presenza al suo
 interno. Tale sistema conferma poi al cliente l'avvio della sua procedura d'acquisto.
@@ -61,7 +61,7 @@ servono su di un prodotto nel catalogo del negozio, gli basterà scannerizzare u
 comunicarlo al sistema negozio, il quale risponderà con tutte le informazioni necessarie.
 
 Se il cliente è convinto della sua scelta, potrà mettere il prodotto nel suo carrello fisico, così da aggiungerlo anche al suo
-carrello virtuale. Il cliente prima solleverà il prodotto da una scaffaleria _smart_, che a sua volta invierà una notifica di
+carrello virtuale. Il cliente prima solleverà il prodotto da una scaffalatura _smart_, che a sua volta invierà una notifica di
 sollevamento al sistema negozio per motivi di sicurezza. Il sistema infatti inoltrerà questa notifica al responsabile di negozio,
 che potrà controllare quali prodotti in catalogo sono stati sollevati. A questo punto il cliente inserirà il prodotto nel carrello
 _smart_, il quale si occuperà di comunicare il codice identificativo del prodotto aggiunto al sistema negozio, che confermerà
@@ -76,7 +76,7 @@ necessario, il sistema effettua il pagamento per il cliente con i dati che ha fo
 pagamento. A questo punto, il carrello _smart_ viene bloccato dal negozio per un successivo utilizzo. Se il cliente farà richiesta
 degli acquisti effettuati potrà vedere tutto lo storico degli stessi, tra cui quello appena effettuato.
 
-![Domain storytelling relativo al mettere via un prodotto nel carrello](/toys-store/images/DS2.jpg)
+![Domain storytelling relativo al mettere via un prodotto nel carrello](/toys-store/assets/images/DS2.jpg)
 
 Un cliente potrebbe decidere di voler rimuovere un prodotto dal suo carrello, in tal caso è necessario utilizzare un sistema
 apposito detto "sistema di restituzione". Il cliente dapprima alza il prodotto dal carrello, per inserirlo in tale sistema. Questo
@@ -92,10 +92,10 @@ non è più presente e, come nel caso precedente, per motivi di sicurezza il sis
 
 In ambedue i casi precedenti, dopo che il prodotto è stato restituito, il responsabile di negozio ha il compito di rimetterlo a
 posto. Il responsabile ha la facoltà di vedere tutti i prodotti restituiti e, per sistemare ognuno di essi, deve prima collocare
-il prodotto nella corretta scaffaleria _smart_ e in seguito notificare il sistema negozio che il prodotto è stato rimesso al suo
+il prodotto nella corretta scaffalatura _smart_ e in seguito notificare il sistema negozio che il prodotto è stato rimesso al suo
 posto.
 
-![Domain storytelling relativo allo spegnimento di un dispositivo, della gestione del post-vendita, della modifica dell'allestimento e dei carrelli in negozio](/toys-store/images/DS3.jpg)
+![Domain storytelling relativo allo spegnimento di un dispositivo, della gestione del post-vendita, della modifica dell'allestimento e dei carrelli in negozio](/toys-store/assets/images/DS3.jpg)
 
 In caso il dispositivo che il cliente utilizza per accedere al sistema negozio dovesse spegnersi o malfunzionare, sarà premura
 del cliente notificare il responsabile di negozio. Costui verificherà il contenuto del carrello del cliente, per identificare
@@ -120,7 +120,7 @@ il responsabile di negozio potrà sbloccarlo, ovvero rimuovere i vincoli alle ru
 senza però potervi aggiungere dei prodotti. Dopo averlo ricondotto al suo posto, potrà nuovamente bloccarlo come qualsiasi carrello
 che si trova a posto.
 
-![Domain storytelling relativo al riconoscimento di un furto, alle analisi di marketing e all'aggiornamento dei listini di vendita](/toys-store/images/DS4.jpg)
+![Domain storytelling relativo al riconoscimento di un furto, alle analisi di marketing e all'aggiornamento dei listini di vendita](/toys-store/assets/images/DS4.jpg)
 
 Altra "_story_" particolarmente importante è quella relativa al riconoscimento dei furti di prodotti. In caso un cliente si
 rivelasse essere un malintenzionato, questo solleverebbe un prodotto dal suo scaffale, senza inserirlo nel suo carrello. Lo scaffale,
@@ -143,6 +143,131 @@ o inserirne una nuova. Discorso analogo vale per i prodotti nel catalogo di cias
 a dover aggiungere o rimuovere i prodotti nel sistema, in quanto i loro dati sono legati allo specifico negozio in cui si trovano.
 
 ## Casi d'uso
+
+Sulla base del domain storytelling effettuato in precedenza, sono emersi tre attori principali all'interno del sistema, ovverosia
+il cliente, il responsabile di negozio e l'amministrazione. Questi tre possono interagire attraverso interfacce diverse del sistema
+negozio, quando vogliono utilizzare le sue funzionalità. È stato deciso che un cliente può interagire con un'applicazione installata
+su di un dispositivo proprio, oppure fornito dal negozio, per quanto riguarda la gestione del suo processo di acquisto. Il
+responsabile di negozio, così come l'amministrazione, possono interagire con il negozio attraverso un'apposita _dashboard_. Inoltre,
+le altre interfacce utilizzabili dagli attori del sistema sono quelle relative ai vari _smart device_ ovvero il carrello, la
+scaffalatura, il sistema di restituzione e il sistema antitaccheggio.
+
+Per ciascuna interfaccia è stato realizzato un apposito diagramma UML dei casi d'uso della stessa.
+
+![Diagramma dei casi d'uso dell'applicazione](/toys-store/assets/images/Applicazione.png)
+
+Un cliente, utilizzando l'applicazione, vuole poter:
+
+* effettuare la registrazione nel sistema;
+* effettuare la de-registrazione dal sistema;
+* fare _login_ una volta registratosi;
+* fare _logout_ una volta fatto _login_;
+* modificare i dati inseriti in fase di registrazione, così come la propria _password_, una volta fatto _login_;
+* scansionare il codice identificativo di un carrello;
+* associare il carrello di cui ha appena scansionato il codice identificativo;
+* scansionare il codice identificativo di un prodotto;
+* visualizzare i dati relativi al prodotto in catalogo per cui ha appena scansionato il codice identificativo del prodotto
+ad esso associato;
+* visualizzare il contenuto del proprio carrello;
+* visualizzare gli acquisti già effettuati;
+* effettuare l'ingresso in negozio;
+* effettuare l'uscita dal negozio, che comprende il blocco del carrello associato al cliente e l'effettuazione del pagamento;
+  * l'effettuazione del pagamento coinvolgerà il sistema di pagamento;
+  * l'effettuazione del pagamento può avvenire con successo o con fallimento.
+
+![Diagramma dei casi d'uso della dashboard lato responsabile di negozio](/toys-store/assets/images/Dashboard_responsabile.png)
+
+Un responsabile di negozio, utilizzando la dashboard, vuole poter:
+
+* effettuare la registrazione nel sistema;
+* effettuare la de-registrazione dal sistema;
+* fare _login_ una volta registratosi;
+* fare _logout_ una volta fatto _login_;
+* modificare i dati inseriti in fase di registrazione, così come la propria _password_, una volta fatto _login_;
+* visualizzare i carrelli presenti in negozio;
+* sbloccare un carrello bloccato;
+* bloccare un carrello sbloccato;
+* annullare la procedura d'acquisto di un cliente, che comprende il blocco del carrello associato al cliente di cui si sta
+annullando la procedura d'acquisto e il sollevamento dei prodotti in catalogo che sono associati ai prodotti parte del contenuto del
+carrello del cliente;
+  * il sollevamento dei prodotti in catalogo viene notificato al responsabile di negozio;
+  * il blocco del carrello associato al cliente è un caso più specifico del blocco di un carrello sbloccato;
+  * il successo dell'operazione viene notificato all'applicazione del cliente.
+* rimuovere un prodotto dal carrello di un cliente, che comprende il sollevamento del prodotto in catalogo che è associato al prodotto che sta venendo rimosso;
+  * il sollevamento del prodotto in catalogo viene notificato al responsabile di negozio;
+  * il successo dell'operazione viene notificato all'applicazione del cliente.
+* associare un carrello ad un cliente;
+  * il successo dell'operazione viene notificato all'applicazione del cliente.
+* aggiungere un prodotto al carrello di un cliente, che comprende la precedente visualizzazione del prodotto in catalogo associato
+al prodotto che il responsabile vuole aggiungere;
+  * il successo dell'operazione viene notificato all'applicazione del cliente.
+* rimuovere un carrello;
+* aggiungere un carrello;
+* visualizzare l'allestimento del negozio;
+* aggiungere, modificare o rimuovere una gondola;
+* aggiungere, modificare o rimuovere una scaffalatura;
+* aggiungere, modificare o rimuovere uno scaffale;
+* aggiungere, modificare o rimuovere una fila di prodotti;
+* visualizzare la procedura d'acquisto di un cliente;
+* ricevere una notifica ogni volta viene restituito un prodotto;
+* ricollocare al proprio posto un prodotto restituito;
+* ricollocare al proprio posto un prodotto in catalogo sollevato;
+* visualizzare i prodotti in catalogo sollevati;
+* visualizzare i prodotti restituiti;
+* aggiungere o rimuovere un prodotto nel negozio;
+* aggiungere o rimuovere un acquisto;
+* aggiungere o rimuovere un pagamento;
+* visualizzare i pagamenti di ciascun cliente;
+* visualizzare gli acquisti di ciascun cliente;
+* ricevere una notifica ogni volta che un prodotto in catalogo è stato sollevato.
+
+![Diagramma dei casi d'uso della dashboard lato amministrazione](/toys-store/assets/images/Dashboard_amministrazione.png)
+
+L'amministrazione, utilizzando la dashboard, vuole poter:
+
+* fare _login_;
+* fare _logout_ una volta fatto _login_;
+* modificare la propria _password_ una volta fatto _login_;
+* visualizzare gli acquisti suddivisi per negozio;
+* visualizzare gli acquisti per intervallo di date;
+* visualizzare i pagamenti per intervallo di date;
+* aggiungere, modificare o rimuovere una tipologia di prodotto;
+* aggiungere, modificare o rimuovere un prodotto in catalogo.
+
+![Diagramma dei casi d'uso del carrello](/toys-store/assets/images/Carrello.png)
+
+Un cliente, utilizzando un carrello, vuole poter:
+
+* appoggiare un prodotto nel carrello;
+  * sia la sua applicazione che la _dashboard_ verranno aggiornate con il nuovo dato qualora un cliente o un responsabile di
+  negozio facciano richiesta di visualizzare i dati aggiornati;
+  * questa operazione potrebbe scatenare l'allarme del carrello, nel caso in cui non sia associato ad un cliente.
+* muovere il carrello;
+  * questa operazione potrebbe scatenare l'allarme del carrello, nel caso in cui sia bloccato.
+
+![Diagramma dei casi d'uso del sistema di restituzione](/toys-store/assets/images/Sistema_restituzione.png)
+
+Un cliente, utilizzando il sistema di restituzione, vuole poter:
+
+* inserire un prodotto nel sistema di restituzione;
+* restituire un prodotto, dopo averlo inserito;
+  * sia la sua applicazione che la _dashboard_ verranno aggiornate con il nuovo dato qualora un cliente o un responsabile di
+  negozio facciano richiesta di visualizzare i dati aggiornati;
+  * questa operazione richiede che il cliente confermi di voler restituire il prodotto inserito.
+
+![Diagramma dei casi d'uso del sistema antitaccheggio](/toys-store/assets/images/Sistema_antitaccheggio.png)
+
+Un cliente, utilizzando il sistema antitaccheggio, vuole poter:
+
+* avvicinare ad esso un prodotto;
+  * questa operazione potrebbe scatenare l'allarme dell'antitaccheggio, nel caso in cui il prodotto non sia un prodotto nel carrello
+  di un cliente, il che comprende anche che venga avvisato il responsabile di negozio.
+
+![Diagramma dei casi d'uso della scaffalatura](/toys-store/assets/images/Scaffalatura.png)
+
+Un cliente, utilizzando una scaffalatura, vuole poter:
+
+* sollevare un prodotto in catalogo dalla sua fila di prodotti.
 
 ## Event storming
 
