@@ -21,7 +21,7 @@
 title: Progetto "Toys Store"
 email: pervasive@cats.it
 description: >- # this means to ignore newlines until "baseurl:"
-  Sito per la disseminazione del progetto "Toys Store", sviluppato da "Pervasive Cats S.r.l.s.".
+  Sito per la disseminazione del progetto "Toys Store", sviluppato da "Pervasive Cats S.r.l.s."
 domain: pervasive-cats.github.io
 url: "https://pervasive-cats.github.io"
 baseurl: "/toys-store/"
