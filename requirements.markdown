@@ -159,13 +159,20 @@ Per ciascuna interfaccia è stato realizzato un apposito diagramma UML dei casi 
 Un cliente, utilizzando l'applicazione, vuole poter:
 
 * effettuare la registrazione nel sistema;
+  * i dati che è necessario fornire sono nome utente, email, nome, cognome e password;
+  * ogni cliente è identificato dalla sua email.
 * effettuare la de-registrazione dal sistema;
+  * per poter effettuare la de-registrazione dal sistema è necessario specificare la password.
 * fare _login_ una volta registratosi;
+  * i dati che è necessario fornire sono email e password.
 * fare _logout_ una volta fatto _login_;
 * modificare i dati inseriti in fase di registrazione, così come la propria _password_, una volta fatto _login_;
+  * in caso di modifica della password è necessario indicare anche la vecchia password.
 * scansionare il codice identificativo di un carrello;
+  * il codice di un carrello è univoco per negozio.
 * associare il carrello di cui ha appena scansionato il codice identificativo;
 * scansionare il codice identificativo di un prodotto;
+  * il codice di un prodotto è univoco per prodotto in catalogo, il quale ha un codice univoco per negozio.
 * visualizzare i dati relativi al prodotto in catalogo per cui ha appena scansionato il codice identificativo del prodotto
 ad esso associato;
 * visualizzare il contenuto del proprio carrello;
@@ -180,10 +187,15 @@ ad esso associato;
 Un responsabile di negozio, utilizzando la dashboard, vuole poter:
 
 * effettuare la registrazione nel sistema;
+  * i dati che è necessario fornire sono nome utente, codice del negozio di appartenenza, dati di un metodo di pagamento e password;
+  * ogni responsabile di negozio è identificato dal suo nome utente.
 * effettuare la de-registrazione dal sistema;
 * fare _login_ una volta registratosi;
+  * i dati che è necessario fornire sono nome utente e password.
 * fare _logout_ una volta fatto _login_;
 * modificare i dati inseriti in fase di registrazione, così come la propria _password_, una volta fatto _login_;
+  * il nome utente non può essere modificato;
+  * in caso di modifica della password è necessario indicare anche la vecchia password.
 * visualizzare i carrelli presenti in negozio;
 * sbloccare un carrello bloccato;
 * bloccare un carrello sbloccato;
@@ -191,7 +203,6 @@ Un responsabile di negozio, utilizzando la dashboard, vuole poter:
 annullando la procedura d'acquisto e il sollevamento dei prodotti in catalogo che sono associati ai prodotti parte del contenuto del
 carrello del cliente;
   * il sollevamento dei prodotti in catalogo viene notificato al responsabile di negozio;
-  * il blocco del carrello associato al cliente è un caso più specifico del blocco di un carrello sbloccato;
   * il successo dell'operazione viene notificato all'applicazione del cliente.
 * rimuovere un prodotto dal carrello di un cliente, che comprende il sollevamento del prodotto in catalogo che è associato al prodotto che sta venendo rimosso;
   * il sollevamento del prodotto in catalogo viene notificato al responsabile di negozio;
@@ -205,9 +216,13 @@ al prodotto che il responsabile vuole aggiungere;
 * aggiungere un carrello;
 * visualizzare l'allestimento del negozio;
 * aggiungere, modificare o rimuovere una gondola;
+  * il codice identificativo di una gondola è univoco per negozio.
 * aggiungere, modificare o rimuovere una scaffalatura;
+  * il codice identificativo di una scaffalatura è univoco per gondola.
 * aggiungere, modificare o rimuovere uno scaffale;
+  * il codice identificativo di uno scaffale è univoco per scaffalatura.
 * aggiungere, modificare o rimuovere una fila di prodotti;
+  * il codice identificativo di una fila di prodotti è univoco per scaffale.
 * visualizzare la procedura d'acquisto di un cliente;
 * ricevere una notifica ogni volta viene restituito un prodotto;
 * ricollocare al proprio posto un prodotto restituito;
@@ -226,13 +241,17 @@ al prodotto che il responsabile vuole aggiungere;
 L'amministrazione, utilizzando la dashboard, vuole poter:
 
 * fare _login_;
+  * i dati che è necessario fornire sono nome utente e password;
 * fare _logout_ una volta fatto _login_;
 * modificare la propria _password_ una volta fatto _login_;
+  * in caso di modifica della password è necessario indicare anche la vecchia password.
 * visualizzare gli acquisti suddivisi per negozio;
 * visualizzare gli acquisti per intervallo di date;
 * visualizzare i pagamenti per intervallo di date;
 * aggiungere, modificare o rimuovere una tipologia di prodotto;
-* aggiungere, modificare o rimuovere un prodotto in catalogo.
+* aggiungere, modificare o rimuovere un prodotto in catalogo;
+  * il codice di un prodotto in catalogo è univoco per negozio;
+  * ogni prodotto in catalogo è associato ad una sola tipologia di prodotto.
 
 ![Diagramma dei casi d'uso del carrello](/toys-store/assets/images/Carrello.png)
 
@@ -261,7 +280,7 @@ Un cliente, utilizzando il sistema antitaccheggio, vuole poter:
 
 * avvicinare ad esso un prodotto;
   * questa operazione potrebbe scatenare l'allarme dell'antitaccheggio, nel caso in cui il prodotto non sia un prodotto nel carrello
-  di un cliente, il che comprende anche che venga avvisato il responsabile di negozio.
+    di un cliente, il che comprende anche che venga avvisato il responsabile di negozio.
 
 ![Diagramma dei casi d'uso della scaffalatura](/toys-store/assets/images/Scaffalatura.png)
 
@@ -418,7 +437,39 @@ Qui di seguito, invece, il dizionario delle traduzioni di ciascun concetto dall'
 |Valuta                  |Currency          |
 |Verificare              |Verify            |
 
-## Requisiti
+## Requisiti Non Funzionali
+
+In aggiunta ai requisiti funzionali elencati precedentemente, così come estrapolati dal processo di knowledge crunching,
+sono stati individuati i seguenti requisiti non funzionali:
+
+* Il sistema deve essere sufficientemente modulare in modo tale da essere possibile riusare i suoi componenti in
+contesti diversi senza problemi;
+  * Non ci devono essere dipendenze tra le classi dei componenti, ma solo verso interfacce liberamente re-implementabili;
+  * Non ci devono essere dipendenze da interfacce di livello di dominio verso interfacce di livello applicativo o di
+    livello dati, possono solo essere eventualmente presenti tra le loro implementazioni;
+  * Non ci devono essere dipendenze da entità di livello dati verso entità di livello applicativo;
+  * I componenti del sistema devono essere quanto meno possibile dipendenti tra di loro, devono poter essere implementati
+    indipendentemente, rilasciati indipendentemente, devono fallire indipendentemente tra loro;
+* Il sistema non deve mai interrompersi qualora si verifichi un errore, deve invece restituire un messaggio di errore;
+* Le _user interfaces_ del sistema devono essere fluide, cioè non presentare _stuttering_ o _freezing_;
+* Il sistema deve poter gestire un carico di almeno una cinquantina di utenti senza subire fallimenti dovuti a sovraccarico;
+* La copertura degli _statements_ e dei _branches_ nella valutazione della _coverage_ deve essere pari o superiore all'80%;
+* La qualità del codice deve essere considerata adeguata secondo lo strumento "Sonarcloud".
+
+## Requisiti Implementativi
+
+In aggiunta ai requisiti funzionali elencati precedentemente, così come estrapolati dal processo di knowledge crunching,
+sono stati individuati i seguenti requisiti implementativi:
+
+* L'implementazione dell'applicazione deve essere fatta nel linguaggio "scala", con compatibilità garantita con la versione 3.1.3;
+* Deve essere sfruttato lo strumento di _build automation_ "scala build tool" versione 1.8.0 o successive per automatizzare la
+  compilazione, il _testing_ e il _deployment_ degli artefatti rilasciati;
+* Devono essere applicati i pattern tattici del _Domain Driven Design_ durante la progettazione e l'implementazione del sistema;
+* La repository deve essere gestita attraverso il D.V.C.S. "git" e mantenuta sul servizio di _hosting_ "GitHub";
+* Deve essere sfruttata la tecnologia offerta da "GitHub" per effettuare _continuous integration_ e _continuous deployment_,
+  ovvero "GitHub Actions";
+* Il _versioning_ degli artefatti deve avvenire in maniera automatica attraverso lo strumento "semantic release", ciò implica il
+  fatto che i numeri di versione vengono scelti secondo la strategia "semantic versioning".
 
 <br/>
 <div>
