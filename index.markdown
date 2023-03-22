@@ -61,3 +61,4 @@ stesso.
     3. [Build system](/toys-store/devops#build-system)
     4. [Continuous Integration](/toys-store/devops#continuous-integration)
     5. [Continuous Deployment](/toys-store/devops#continuous-deployment)
+7. [Deployment](/toys-store/deployment)

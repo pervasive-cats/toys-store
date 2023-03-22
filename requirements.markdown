@@ -290,6 +290,125 @@ Un cliente, utilizzando una scaffalatura, vuole poter:
 
 ## Event storming
 
+L'event storming, avvenuto in seguito al domain storytelling iniziale e alla raccolta dei requisiti funzionali mediante i diagrammi
+dei casi d'uso, necessariamente ha seguito la traccia da questi già segnata. L'obiettivo da raggiungere con questa tecnica è stato
+infatti quello di riordinare ulteriormente le informazioni già raccolte in senso temporale. Questo ha significato cercare di
+raccogliere tutte le _story_ in un unica grande sequenza di eventi che si sussegue, mostrando però anche le possibili ramificazioni
+e gli eventi generati da attori che portano avanti le proprie azioni in parallelo.
+
+La sequenza principale non poteva che essere quella inerente agli eventi di un cliente che interagisce con il sistema negozio, in
+quanto attore principale, nonché la sequenza più lunga di tutte, sulla quale si appoggiando la maggior parte delle funzionalità
+del sistema.
+
+La versione di event storming messa in pratica cerca di rispettare i colori che sono parte della definizione originale di questa
+tecnica, pur però cercando di venire incontro alle persone con problemi di daltonismo. Per questo motivo, è stato deciso di
+correggerla come segue:
+
+* arancione: domain event;
+* giallo chiaro: actor o agent;
+* blu: system;
+* giallo ocra: boundary;
+* azzurro: arrow vote;
+* rosa: hotspot;
+* verde: opportunity.
+
+Inoltre, non era possibile utilizzare foglietti adesivi di diverse dimensioni perché il software Miro utilizzato non permetteva
+di averli a disposizione. Per questo motivo si sono utilizzati quelli quadrati tradizionali eccetto che per i boundary, sostituiti
+da rettangoli stretti ed alti.
+
+![Prima parte dell'event storming](/toys-store/assets/images/ES1.jpg)
+
+La sequenza di eventi inizia con il cliente che si registra al sistema e poi effettua il login mediante l'applicazione. Una volta
+fatto login, può decidere anche di modificare i dati che ha inserito. La stessa cosa può fare un responsabile di negozio, solamente
+che anziché utilizzare un'applicazione, dovrà utilizzare la dashboard apposita. Tutte queste operazioni, che contraddistinguono la
+fase iniziale, sono di pertinenza del bounded context "utenti", che gestirà i dati inerenti agli utenti del sistema, come
+suggerisce il nome. Fa eccezione la registrazione del cliente che interessa anche il bounded context "pagamenti" perché dovrà gestire
+le informazioni sui metodi di pagamento del cliente.
+
+Una volta "inizializzati" i dati del cliente, che ora fa parte del sistema, può entrare in negozio e far iniziare il suo processo
+d'acquisto, che viene gestito dal bounded context "shopping".
+Questo sarà segnalato al sistema tramite l'applicazione, la quale permetterà quindi al cliente di scannerizzare il
+codice di un carrello ed associarlo ad egli stesso. Una volta che il cliente riceverà conferma dell'associazione, potrà liberamente
+muovere il carrello per il negozio e spostarlo dove preferisce. In caso il cliente muovesse o inserisse prodotti all'interno del
+carrello senza prima averlo associato, l'allarme di quest'ultimo verrebbe fatto suonare per ricordare al cliente la corretta
+procedura da seguire per fare il proprio acquisto. In caso di problemi, anche il responsabile di negozio può associare un carrello
+ad un cliente. Di tutte queste operazioni se ne occuperà il bounded context "carrelli", deputato appunto alla gestione dei carrelli.
+
+A questo punto, il cliente che si aggira per il negozio ha la facoltà di sollevare i prodotti dalle scaffalature, cosa di cui il
+responsabile di negozio viene immediatamente allertato sulla dashboard. Questo è un punto di forza per la soluzione, perché così a
+fine giornata, quando il negozio chiude, è più semplice capire quali prodotti sono stati sollevati e quindi possono essere in giro
+per il negozio da rimettere a posto. Di questo si occupa il bounded context "negozi", perché gestisce tutti i sottosistemi legati
+ad uno specifico negozio. Con il prodotto in mano, il cliente può scansionare il suo codice identificativo tramite l'applicazione
+per ricevere maggiori informazioni su di esso. Questo viene invece gestito dal bounded context "prodotti", che gestisce tutte le
+informazioni su ciò che è in vendita nei negozi. Questa fase si conclude con l'inserimento del prodotto nel carrello. Se il cliente
+deciderà di non farlo, quando si avvicinerà al sistema antitaccheggio questo rileverà il prodotto non nel carrello e suonerà il suo
+allarme. Anche la gestione di questo sottosistema è affidata al bounded context "negozi".
+
+In ogni momento, da quando il cliente ha avviato la sua procedura d'acquisto, il responsabile di negozio può decidere di cancellarla
+dalla sua dashboard. Questo viene gestito dal bounded context responsabile della procedura di acquisto del cliente, ovverosia
+"shopping". In caso il responsabile annullasse la procedura, il carrello del cliente viene bloccato e tutti i prodotti al suo interno
+passano ad essere semplicemente sollevati e non presenti in nessun carrello. Di questo sarà notificato il responsabile di negozio,
+che potrà vedere quali sono e rimetterli a posto immediatamente. Tutte queste operazioni sono responsabilità del bounded context
+"prodotti", eccetto bloccare il carrello, che è responsabilità di "carrelli".
+
+![Seconda parte dell'event storming](/toys-store/assets/images/ES2.jpg)
+
+Una volta inserito il prodotto all'interno del carrello, il carrello può identificare il prodotto. Queste operazioni sono gestite
+dal bounded context "carrelli". Quando il sistema viene a conoscenza di un nuovo prodotto inserito nel carrello, lo aggiunge al
+contenuto del carrello del cliente, che potrà richiedere di visualizzarlo e averlo disponibile mediante la sua applicazione. La
+gestione dello stato della procedura d'acquisto, così come del contenuto del carrello, è affidata al bounded context "shopping".
+
+Una volta che un prodotto è stato inserito nel carrello, è possibile per il cliente rimuoverlo utilizzando il sistema di restituzione.
+Egli non dovrà fare altro che inserirlo al suo interno, confermare il fatto di volerlo rimuovere e questo verrà notificato sia
+al cliente mediante l'applicazione che al responsabile di negozio mediante la dashboard. A questo punto, il responsabile potrà
+visualizzare quali prodotti sono da rimettere a posto e farlo, andandoli a prendere da dentro il sistema di restituzione. Una volta
+rimessi a posto, utilizzerà la dashboard per segnalare il fatto che il compito è stato concluso. Utilizzare questo metodo permette
+di semplificare il lavoro del responsabile di negozio, che può sia sapere più facilmente quali prodotti vanno rimessi a posto, sia
+effettuare l'operazione stessa con più facilità. La gestione del sistema di restituzione, così come di tutte le operazioni che
+permette, sono di pertinenza del bounded context "negozi".
+
+In caso di problemi, il responsabile di negozio può sempre decidere di aggiungere o rimuovere manualmente un prodotto dal carrello
+di un cliente mediante la dashboard. La rimozione comporta il passaggio allo stato di sollevato e la generazione della relativa
+notifica. Questo viene gestito dal bounded context "prodotti".
+
+L'ultima fase della sequenza si ha nel momento nel quale il cliente, soddisfatto del suo acquisto, decide di uscire dal negozio.
+In tal caso la procedura d'acquisto termina e il carrello del cliente viene bloccato, unica operazione ad opera del bounded
+context "carrelli". Il sistema aspetta poi un certo lasso di tempo, durante il quale il cliente ha ancora la facoltà di rientrare
+in negozio e riprendere il suo acquisto, per poi lanciare il pagamento. Questo passaggio tra i diversi stati della procedura di
+acquisto del cliente sono gestiti dal bounded context "shopping".
+
+L'intero processo termina con il pagamento dell'acquisto fatto, che può avere successo o fallire. Questo implica necessariamente
+una problematica da risolvere: occorre procurarsi un sistema di pagamento elettronico tramite il quale gestire le transazioni
+monetarie. Questo però permette un'esperienza di acquisto molto più flessibile per l'utente, che è il punto di forza fondamentale
+che motiva l'intero sistema. I pagamenti saranno chiaramente gestiti dal bounded context responsabile, ovvero "pagamenti".
+
+Una volta che la procedura di acquisto è terminata, il cliente può anche fare logout dall'applicazione o addirittura de-registrarsi.
+Entrambe le operazioni sono gestite dal bounded context "users". Il responsabile di negozio può decidere di sbloccare un carrello
+per rimetterlo a posto e poi bloccarlo nuovamente, utilizzando il bounded context "carrelli". Finiti i suoi compiti, anche un
+responsabile di negozio può fare logout o anche de-registrarsi, utilizzando la dashboard che farà gestire queste operazioni al
+bounded context "utenti".
+
+![Terza parte dell'event storming](/toys-store/assets/images/ES3.jpg)
+
+Da ultimo sono stati raccolti tutti gli eventi relativi ad altre operazioni che il responsabile e l'amministrazione possono fare
+mediante la dashboard.
+
+Un responsabile può aggiungere, rimuovere o visualizzare i carrelli in negozio mediante il bounded context
+"carrelli". Un responsabile può aggiungere un nuovo prodotto al negozio oppure rimuoverlo mediante il bounded context "prodotti",
+può modificare o visualizzare l'allestimento del negozio grazie a "negozi". È però bene chiarire se e in che modo il responsabile
+può modificare l'allestimento del negozio mentre questo è aperto. Da ultimo, il responsabile può modificare e visualizzare gli
+acquisti e i pagamenti effettuati da qualsiasi cliente, operazioni la cui responsabilità ricade sul bounded context "pagamenti".
+
+L'amministrazione può fare login ed eventualmente modificare i suoi dati, operazioni gestite come in ogni altro caso dal bounded
+context "utenti". Attraverso quello denominato "prodotti" può aggiungere, rimuovere o modificare le informazioni relative ai
+prodotti in catalogo e alle tipologie di prodotti. Tramite le operazioni del bounded context "pagamenti" l'amministrazione può
+visualizzare gli acquisti per negozio, ma anche acquisti e pagamenti per intervallo di date. Questo permette al reparto marketing
+aziendale di raccogliere maggiori e migliori dati sulle intenzioni di acquisto dei clienti. Infine, sempre tramite il bounded
+context "utenti", l'amministrazione può fare logout.
+
+Un altro punto saliente che dovrà essere meglio identificato in fase di progettazione del sistema è quali sono le responsabilità
+precise del carrello e del sistema di restituzione, cosa possono fare e che cosa invece è responsabilità del cliente o del sistema.
+
 ## Ubiquitous Language
 
 L'ubiquitous language è stato realizzato sotto forma di mappa concettuale, per poter evidenziare i collegamenti tra i concetti,
