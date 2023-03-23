@@ -592,7 +592,7 @@ sono stati individuati i seguenti requisiti implementativi:
 
 <br/>
 <div>
-    <div style="text-align: center"><a href="#analisi-dei-requisiti">Torna su</a></div>
+    <div style="text-align: center"><a href="#">Torna su</a></div>
     <div style="width: 50%; float: left">Vai a <a href="/toys-store/">Home</a></div>
     <div style="width: 50%; float: right; text-align: right">Vai a <a href="/toys-store/architectural_design">Design Architetturale</a></div>
 </div>
