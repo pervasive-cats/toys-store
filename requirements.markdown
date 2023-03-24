@@ -9,8 +9,6 @@ permalink: /requirements
 </div>
 <br/>
 
-## Analisi dei requisiti
-
 La raccolta dei requisiti è stata costituita principalmente dal processo di "knowledge crunching". Il progetto ha una componente
 fortemente innovativa, per cui non esistono casi analoghi su cui potersi basare. A maggior ragione è perciò importante assicurarsi
 con i _domain experts_ che tutto il team di progetto sia a conoscenza del dominio e dei suoi dettagli, in modo da evitare
