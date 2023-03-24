@@ -579,6 +579,7 @@ In aggiunta ai requisiti funzionali elencati precedentemente, così come estrapo
 sono stati individuati i seguenti requisiti implementativi:
 
 * L'implementazione dell'applicazione deve essere fatta nel linguaggio "scala", con compatibilità garantita con la versione 3.1.3;
+* Il Java Runtime Environment che eseguirà il codice in linguaggio scala dovrà avere compatibilità garantita con la versione 17.0.6;
 * Deve essere sfruttato lo strumento di _build automation_ "scala build tool" versione 1.8.0 o successive per automatizzare la
   compilazione, il _testing_ e il _deployment_ degli artefatti rilasciati;
 * Devono essere applicati i pattern tattici del _Domain Driven Design_ durante la progettazione e l'implementazione del sistema;
