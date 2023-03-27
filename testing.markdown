@@ -5,7 +5,7 @@ permalink: /testing
 
 <div>
     <div style="width: 50%; float: left">Vai a <a href="/toys-store/implementation">Implementazione</a></div>
-    <div style="width: 50%; float: right; text-align: right">Vai a <a href="/toys-store/devops">Devops</a></div>
+    <div style="width: 50%; float: right; text-align: right">Vai a <a href="/toys-store/deployment">Deployment</a></div>
 </div>
 <br/>
 
@@ -62,6 +62,6 @@ servizi necessari, quindi inclusi anche quelli di Eclipse Ditto, siano già atti
 <div>
     <div style="text-align: center"><a href="#">Torna su</a></div>
     <div style="width: 50%; float: left">Vai a <a href="/toys-store/implementation">Implementazione</a></div>
-    <div style="width: 50%; float: right; text-align: right">Vai a <a href="/toys-store/devops">Devops</a></div>
+    <div style="width: 50%; float: right; text-align: right">Vai a <a href="/toys-store/deployment">Deployment</a></div>
 </div>
 <br/>

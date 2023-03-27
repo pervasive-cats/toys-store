@@ -4,7 +4,7 @@ permalink: /implementation
 ---
 
 <div>
-    <div style="width: 50%; float: left">Vai a <a href="/toys-store/detailed-design">Design di dettaglio</a></div>
+    <div style="width: 50%; float: left">Vai a <a href="/toys-store/devops">Devops</a></div>
     <div style="width: 50%; float: right; text-align: right">Vai a <a href="/toys-store/testing">Testing</a></div>
 </div>
 <br/>
@@ -212,7 +212,7 @@ in quanto i container sono già visibili sulla rete host.
 <br/>
 <div>
     <div style="text-align: center"><a href="#">Torna su</a></div>
-    <div style="width: 50%; float: left">Vai a <a href="/toys-store/detailed-design">Design di dettaglio</a></div>
+    <div style="width: 50%; float: left">Vai a <a href="/toys-store/devops">Devops</a></div>
     <div style="width: 50%; float: right; text-align: right">Vai a <a href="/toys-store/testing">Testing</a></div>
 </div>
 <br/>

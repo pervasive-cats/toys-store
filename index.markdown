@@ -58,7 +58,7 @@ stesso.
     3. [Akka](/toys-store/implementation#akka)
     4. [Websocket](/toys-store/implementation#websocket)
     5. [Docker](/toys-store/implementation#docker)
-6. [Testing](/toys-storeunit/testing)
+6. [Testing](/toys-store/testing)
     1. [Unit testing](/toys-store/testing#unit-testing)
     2. [Integration testing](/toys-store/testing#integration-testing)
 7. [Deployment](/toys-store/deployment)
