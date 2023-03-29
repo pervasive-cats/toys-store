@@ -22,7 +22,7 @@ strumento per la disseminazione dei risultati, sia da corpus di conoscenze accum
 la conoscenza accumulata sul dominio in un'ottica di miglioramento ed estensione del progetto stesso. Le informazioni sono presentate
 in un ordine che è tradizionale per lo sviluppo software: dapprima i requisiti e la loro raccolta, poi la discussione delle scelte
 di design per il progetto e infine i dettagli di implementazione più rilevanti e il _testing_. Particolare interesse è rivolto
-anche alle _operations_,ormai inscindibilmente legate al processo di sviluppo e per questo da considerarsi parte integrante dello
+anche alle _operations_, ormai inscindibilmente legate al processo di sviluppo e per questo da considerarsi parte integrante dello
 stesso.
 
 ## Indice dei contenuti
@@ -40,18 +40,17 @@ stesso.
     3. [Digital twin](/toys-store/architectural_design#digital-twin)
     4. [Attori](/toys-store/arcitectural_design#attori)
 3. [Design di dettaglio](/toys-store/detailed_design)
-    1. [Microservizio "Utenti"](/toys-store/detailed_design#microservizio-utenti)
-    2. [Microservizio "Prodotti"](/toys-store/detailed_design#microservizio-prodotti)
-    3. [Microservizio "Carrelli"](/toys-store/detailed_design#microservizio-carrelli)
-    4. [Microservizio "Negozi"](/toys-store/detailed_design#microservizio-negozi)
-    5. [Microservizio "Shopping"](/toys-store/detailed_design#microservizio-shopping)
-    6. [Microservizio "Pagamenti"](/toys-store/detailed_design#microservizio-pagamenti)
+    1. [Microservizio Utenti](/toys-store/detailed_design#microservizio-utenti)
+    2. [Microservizio Prodotti](/toys-store/detailed_design#microservizio-prodotti)
+    3. [Microservizio Carrelli](/toys-store/detailed_design#microservizio-carrelli)
+    4. [Microservizio Negozi](/toys-store/detailed_design#microservizio-negozi)
+    5. [Microservizio Shopping](/toys-store/detailed_design#microservizio-shopping)
+    6. [Microservizio Pagamenti](/toys-store/detailed_design#microservizio-pagamenti)
 4. [Devops](/toys-store/devops)
-    1. [Metodo di sviluppo](/toys-store/devops#metodo-di-sviluppo)
+    1. [Workflow](/toys-store/devops#workflow)
     2. [Organizzazione delle repository](/toys-store/devops#organizzazione-delle-repository)
-    3. [Build system](/toys-store/devops#build-system)
-    4. [Continuous Integration](/toys-store/devops#continuous-integration)
-    5. [Continuous Deployment](/toys-store/devops#continuous-deployment)
+    3. [Continuous Integration](/toys-store/devops#continuous-integration)
+    4. [Continuous Deployment](/toys-store/devops#continuous-deployment)
 5. [Implementazione](/toys-store/implementation)
     1. [Eclipse Ditto](/toys-store/implementation#eclipse-ditto)
     2. [RabbitMQ](/toys-store/implementation#rabbitmq)
