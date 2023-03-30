@@ -3,14 +3,10 @@ title: Design di dettaglio
 permalink: /detailed_design
 ---
 
-## Microservizio "Utenti"
+## Context mapping
 
-## Microservizio "Prodotti"
+## Architettura a microservizi
 
-## Microservizio "Carrelli"
+## Digital twin
 
-## Microservizio "Negozi"
-
-## Microservizio "Shopping"
-
-## Microservizio "Pagamenti"
+## Attori

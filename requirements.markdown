@@ -38,13 +38,14 @@ e di osservare se sono presenti lacune nella conoscenza del dominio o se invece 
 oppure no. Sicuramente la mancanza di un tale strumento impedirebbe una corretta esecuzione di tutte le fasi successive, il cui
 linguaggio stesso dipende dallo "ubiquitous language".
 
+Il domain storytelling e l'event storming sono stati portati avanti in presenza del software architect e di due project manager di
+Pervasive Cats, uno dei quali ha svolto il ruolo di tecnografo, di due _domain expert_, ovvero il responsabile del settore
+_marketing_ e quello del settore _sales_ di Toys Store, e infine il responsabile per il committente, ovvero un project manager
+nominato da Toys Store.
+
 ## Domain storytelling
 
-Il domain storytelling è stato portato avanti in presenza del software architect e di due project manager di Pervasive Cats, uno
-dei quali ha svolto il ruolo di tecnografo, di due _domain expert_, ovvero il responsabile del settore _marketing_ e quello del
-settore _sales_ di Toys Store, e infine il responsabile per il committente, ovvero un project manager nominato da Toys Store.
-
-Il risultato dell'applicazione di questa tecnica è visibile dai seguenti schemi, così come estrapolati da Miro.
+Il risultato dell'applicazione del domain storytelling è visibile nei seguenti schemi, così come estrapolati da Miro.
 
 ![Domain storytelling relativo all'acquisto di un prodotto](/toys-store/assets/images/DS1.jpg)
 
