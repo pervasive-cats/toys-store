@@ -12,38 +12,34 @@ ContextMap ToysStoreContextMap {
     contains UsersContext, ItemsContext, CartsContext, ShoppingContext, PaymentsContext, StoresContext
 
     ShoppingContext [U, OHS, PL]->[D, ACL] UsersContext {
-        implementationTechnology "Akka Cluster"
-    }
-
-    CartsContext [U, OHS, PL]->[D, ACL] UsersContext {
-        implementationTechnology "Akka Cluster"
+        implementationTechnology "RESTful HTTP and RabbitMQ"
     }
 
     PaymentsContext [U, OHS, PL]->[D, ACL] UsersContext {
-        implementationTechnology "Akka Cluster"
+        implementationTechnology "RESTful HTTP and RabbitMQ"
     }
 
     CartsContext [P]<->[P] ShoppingContext {
-        implementationTechnology "Akka Cluster"
+        implementationTechnology "RESTful HTTP and RabbitMQ"
     }
 
     ItemsContext [U, OHS, PL]->[D, ACL] CartsContext {
-        implementationTechnology "Akka Cluster"
+        implementationTechnology "RESTful HTTP and RabbitMQ"
     } 
 
     ItemsContext [U, OHS, PL]->[D, ACL] StoresContext {
-        implementationTechnology "Akka Cluster"
+        implementationTechnology "RESTful HTTP and RabbitMQ"
     }
 
     ItemsContext [P]<->[P] ShoppingContext {
-        implementationTechnology "Akka Cluster"
+        implementationTechnology "RESTful HTTP and RabbitMQ"
     }
 
     ShoppingContext [U, OHS, PL]->[D, ACL] StoresContext {
-        implementationTechnology "Akka Cluster"
+        implementationTechnology "RESTful HTTP and RabbitMQ"
     }
 
     PaymentsContext [U, OHS, PL]->[D, ACL] ShoppingContext {
-        implementationTechnology "Akka Cluster"
+        implementationTechnology "RESTful HTTP and RabbitMQ"
     }
 }

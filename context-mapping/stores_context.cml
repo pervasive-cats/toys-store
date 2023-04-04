@@ -123,12 +123,6 @@ BoundedContext StoresContext implements StoresDomain {
             - StoreId storeId
         }
 
-        DomainEvent ItemPutInPlace {
-            - StoreId storeId
-            - CatalogItem catalogItem
-            - ItemId id
-        }
-
         DomainEvent CatalogItemLiftingRegistered {
             - StoreId storeId
             - ShelvingGroupId shelvingGroupId
@@ -142,26 +136,10 @@ BoundedContext StoresContext implements StoresDomain {
             - StoreId storeId
         }
 
-        DomainEvent CatalogItemPutInPlace {
-            - CatalogItem catalogItem
-            - StoreId storeId
-        }
-
         DomainEvent ItemDetected {
             - ItemId itemId
             - CatalogItem catalogItem
             - StoreId storeId
-        }
-
-        DomainEvent AntiTheftSystemAlarmTriggered {
-            - StoreId storeId
-        }
-
-        Service LayoutManagers {
-
-            boolean existsLayoutWithItem(@StoreId storeId, @CatalogItem catalogItem, @Item item);
-
-            void putCatalogItemInPlace(@StoreId storeId, @CatalogItem catalogItem);
         }
 
         Service ItemStateHandlers {

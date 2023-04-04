@@ -112,14 +112,6 @@ BoundedContext ShoppingContext implements ShoppingDomain {
             - Customer customer
         }
 
-        DomainEvent TimeoutWasReached {
-            - Customer customer
-        }
-
-        DomainEvent CustomerHasPaid {
-            - Customer customer
-        }
-
         DomainEvent ItemAddedToCart {
             - Customer customer
             - CatalogItem catalogItem
@@ -133,6 +125,11 @@ BoundedContext ShoppingContext implements ShoppingDomain {
             - ItemId itemId
         }
 
+        DomainEvent CatalogItemLifted {
+            - CatalogItem catalogItem
+            - Store store
+        }
+
         DomainEvent CustomerUnregistered {
             - Customer customer
         }
@@ -144,10 +141,6 @@ BoundedContext ShoppingContext implements ShoppingDomain {
             void onCartAssociated(@CartAssociated ^event);
             
             void onCustomerHasLeftStore(@CustomerHasLeftStore ^event);
-
-            void onTimeoutWasReached(@TimeoutWasReached ^event);
-
-            void onCustomerHasPaid(@CustomerHasPaid ^event);
 
             void onItemAddedToCart(@ItemAddedToCart ^event);
             
