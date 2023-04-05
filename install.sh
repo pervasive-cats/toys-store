@@ -94,6 +94,11 @@ EOF
     fi;
 done;
 
+export RMQ_USERNAME
+export RMQ_PASSWORD
+export DB_USERNAME
+export DB_PASSWORD
+
 docker compose up -d;
 
 echo "Services started";
