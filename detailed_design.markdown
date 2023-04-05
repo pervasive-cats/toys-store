@@ -24,7 +24,7 @@ da canale di comunicazione dotato di una coda propria responsabile di ricevere i
 richiesto di volerli ricevere. In questo modo nessuna comunicazione è bloccante, così come i migliori modelli per i sistemi
 distribuiti indicano. La comunicazione tra i bounded context e le interfacce, ovvero l'applicazione del cliente e la dashboard
 del responsabile di negozio e dell'amministrazione avviene tramite delle più tradizionali ReST API. Ogni microservizio è dotato di
-un proprio "data layer", capace di far persistere e recuperare i dati necessari.
+un proprio "_data layer_", capace di far persistere e recuperare i dati necessari.
 
 Per realizzare la logica di business dei diversi sotto-sistemi, ovvero i carrelli, le scaffalature, il sistema di restituzione e
 quello antitaccheggio, si è utilizzato il paradigma dei "Digital Twin". In questo modo, avendo a disposizione delle rappresentazioni
@@ -82,7 +82,7 @@ Non avrebbe avuto senso suddividere ulteriormente gli utenti ciascuno nel propri
 troppo fine. Infatti, è presente un ulteriore aggregate che trattiene una entity astratta con gli elementi comuni a tutti gli
 utenti. Inoltre, contiene anche il "service" per la gestione delle password, che necessariamente avviene tramite specifici algoritmi
 pensati per essere sicuri, ma la cui effettiva implementazione è irrilevante ai fini della progettazione. Ognuna delle entity
-concrete è poi dotata di un "repository" che si interfaccia con il data layer e presenta tutte le operazioni per manipolare i dati
+concrete è poi dotata di un "repository" che si interfaccia con il _data layer_ e presenta tutte le operazioni per manipolare i dati
 relativi a ciascuno dei tipi di utenti.
 
 Il bounded context "ItemsContext" contiene un aggregate per ciascuno dei componenti principali che riguardano i prodotti, ovvero
@@ -152,9 +152,93 @@ le transizioni della _state machine_ corrispondente.
 
 ## Architettura a microservizi
 
+L'architettura adottata per il sistema è quella a microservizi. Ogni bounded context è stato mappato in un microservizio, il che
+significa che il sistema si compone di sei microservizi, più ulteriori sei per il _data layer_ dei primi, a cui si aggiungono quello per il message broker e quello per il gestore dei Digital Twin, che sarà approfondito in seguito. In totale, il numero di
+microservizi è pari a 14. La scelta è ricaduta su questo pattern architetturale perché permette di mettere in atto correttamente le
+proprietà che ci attenderemmo dall'implementazione di un bounded context, ovvero l'isolamento di questa porzione di dominio dalle
+altre, in modo tale che il suo modello sia totalmente auto-contenuto e disaccoppiato da quello degli altri bounded context. Con i
+microservizi l'obiettivo è pienamente raggiunto. Ogni microservizio è infatti una componente software volta ad offrire un servizio
+tra loro disaccoppiati e per questo indipendentemente implementabili e rilasciabili. Questo implica il fatto che team diversi
+possono dedicarsi a microservizi diversi in maniera quanto più possibile indipendente e implementandoli come meglio ritengono
+opportuno, anche sfruttando _stack_ tecnologici completamente diversi, anche se non è stato questo il caso per questioni di
+semplicità di sviluppo e rilascio. Inoltre, essendo di piccole dimensioni e indipendenti tra loro, è possibile automatizzare il
+loro processo di _deployment_, che bene si sposa con la metodologia "devops" che si è adottata in questo progetto.
+
+Il lato negativo di utilizzare un'architettura simile è il fatto che si sta così costruendo un sistema distribuito. Questo
+significa che per esso valgono tutti i problemi del caso, ovvero che nessuna componente può conoscere lo stato globale del sistema,
+ma può averne solo una visione parziale fornitagli dagli altri componenti e non è possibile sincronizzare in modo assoluto i
+componenti tra di essi. Per questo motivo, non sono permesse transazioni per operazioni che coinvolgono più microservizi, ma ci si
+affida alla _eventual consistency_, e l'unico modo possibile per comunicare è a scambio di messaggi. Nessuna di queste due
+problematiche però si rivela un ostacolo insuperabile: una buona suddivisione dei bounded context come quella effettuata minimizza
+le operazioni che coinvolgono più bounded context e il fatto di dover gestire la loro consistenza. Per quanto riguarda lo scambio
+di messaggi esistono moltissimi protocolli e _middleware_ efficaci ed efficienti. Si può persino arrivare a simulare delle "Remote
+Procedure Call", benché questo paradigma sia sconsigliato data la sua natura bloccante. Questo problema è stato risolto utilizzando
+come già detto un message broker che permette lo scambio di messaggi tra i microservizi, con il vincolo che la semantica di
+quest'ultimo deve essere "exactly once", ovverosia ogni messaggio viene inviato una ed una sola volta, come se la rete di
+comunicazione sottostante fosse perfettamente affidabile.
+
+Ogni microservizio adotta poi un'architettura come quella visibile nello schema seguente.
+
+![Diagramma esagonale dell'architettura di un generico microservizio](/toys-store/assets/images/microservice.jpg)
+
+Questa architettura è ispirata alla "Clean Architecture" di Robert Martin, che a sua volta riprende ed estende la "Hexagonal
+Architecture" di Alistair Cockburn, l'architettura originariamente pensata per modellare i microservizi. Come si può vedere, al
+centro si trova il modello del dominio per lo specifico microservizio, che è stato estrapolato dalle fasi di progetto precedenti.
+Questo _layer_ conterrà perciò tutti quegli oggetti che incapsulano la business logic del microservizio, ovvero gli elementi
+costituenti della business logic, del servizio che questo microservizio offre. Immediatamente all'esterno si trova il _layer_ di
+applicazione, che utilizza gli oggetti del dominio per mettere in atto le regole di business proprie del microservizio, servendo
+così le richieste che arrivano dall'esterno. Per questo motivo, è questo il livello che incapsula la parte attiva del microservizio,
+che gestisce i flussi di controllo, in quanto li utilizza per poter soddisfare le richieste, mentre il _domain layer_ è la parte
+passiva del sistema. Ancora più all'esterno troviamo gli "adapter", ovvero tutte quelle componenti che servono come intermediarie
+tra il mondo esterno e il microservizio e si occupano di adattare appunto le richieste provenienti da o dirette verso l'esterno in
+modo che il destinatario le possa comprendere, così come poi anche per le relative risposte. Non solo, gli adapter sono delle vere
+e proprie "porte" che connettono il microservizio con l'esterno, permettendo la comunicazione anche se con protocolli rigidi e ben
+determinati. Nell'ultimo livello troviamo appunto il mondo esterno con i suoi sistemi, che dialogano con il microservizio.
+
+Sia per il gestore dei Digital Twin che per il message broker la struttura è analoga: il comportamento del sistema quando si
+interfaccia con questi è demandato ad un attore, che incapsulerà completamente il _client_ che vi dialoga. L'attore è perciò parte
+del livello di applicazione e il _client_ ha il compito di fare l'_adapter_ dei messaggi scambiati tra microservizio e sistema
+esterno. Per quanto riguarda il _database_ a cui si appoggia il microservizio come _data layer_, questo non è dissimile da quanto
+già detto. L'unica differenza è che Domain Driven Design fornisce già un'astrazione per incapsulare le modalità di comunicazione
+con il _database_, che è appunto il concetto di "repository". Se la sua interfaccia vive nel dominio, perché è un'entità di dominio
+che parla la sua lingua e limita i modi in cui ottenere o persistere le informazioni, oltre che le informazioni stesse, la sua
+implementazione necessariamente si trova in un livello più esterno. Il dominio infatti è agnostico nei confronti delle tecnologie,
+ma anche più generalmente della modalità scelta per serializzare i dati. Ultime sono le interfacce, ovvero l'applicazione e la
+dashboard. Queste possono comunicare in più modi con il microservizio, utilizzando protocolli di tipo "request-response" come HTTP
+o "message-oriented" come Websocket. Questo per poter permettere alle interfacce di inviare _command_, _query_ ed _event_ al
+microservizio senza che questi ultimi perdano la loro semantica: se infatti un comando o un'interrogazione possono considerarsi
+completate solamente nel momento nel quale l'operazione associata è stata compiuta, un evento necessita solamente di essere
+notificato, senza dover attendere nessun tipo di conferma o di risposta. Per questo motivo, un protocollo "request-response" è
+ottimo per inviare _query_ o _command_, dove questi rappresentano la _request_ di cui si attende la risposta, mentre uno
+"message-oriented" è migliore per quanto riguarda l'invio di eventi, che non saranno altro che i messaggi inviati. L'unica differenza
+tra l'uso dei due protocolli è che se l'_adapter_ per le comunicazioni via HTTP, ovvero le _route_ HTTP, viene gestito da un attore
+apposito, le comunicazioni via websocket vengono invece gestite dallo stesso attore che gestisce anche il message broker. Questo
+per fare in modo che tutti gli eventi nel sistema vengano gestiti da parte dello stesso attore.
+
 ## Digital twin
 
+What is a digital twin?
+
+Where used?
+
+Why DT? Why not?
+
 ## Attori
+
+Un attore è un'entità reattiva, che esegue il proprio comportamento in corrispondenza della ricezione dei messaggi che riceve
+dagli altri attori che fanno parte del sistema. È capace di modificare il proprio stato interno e il proprio comportamento a
+seconda del tipo di messaggi inviatigli. Questo significa che ogni attore è dotato di una "message box" dove possono essere
+lasciati i messaggi che riceve. Non è necessario sapere dove l'attore si trova, ma solamente qual è il suo identificatore, per
+inviargli un messaggio. Le primitive di base che un attore ha a disposizione sono dunque: "send" per inviare un messaggio ad un
+altro attore, "become" per modificare il proprio comportamento e "spawn" per creare un attore figlio. Ogni attore incapsula un
+proprio flusso di controllo, indipendente da quello degli altri, ed esegue il proprio comportamento secondo una semantica di tipo
+"macro-steps" o "run-to-completion": mentre lo esegue, non può essere effettuata la ricezione di nessun altro messaggio e la
+conseguente esecuzione concorrente del proprio stesso comportamento. Questo implica che un attore non può effettuare chiamate
+bloccanti come parte del suo comportamento.
+
+Where used?
+
+Why actors? Why not?
 
 <br/>
 <div>

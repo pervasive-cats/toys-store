@@ -69,8 +69,8 @@ sulle proprietà del messaggio, l'unico modo è definire code diverse associate 
 diverse, usando la nomenclatura di RabbitMQ. Ogni microservizio ha associato un exchange, a cui sono associate tutte le code su cui
 può inviare messaggi. La routing key è utilizzata per capire qual è la coda del mittente, il quale sarà l'unico subscriber per
 quella coda. I messaggi sono utilizzati per rappresentare gli eventi che i microservizi devono notificarsi tra loro, in quanto più
-facilmente modellabili in questo modo anziché tramite _request_ HTTP. Queste sono comunque utilizzate per implementare comandi e query
-che i microservizi si fanno tra loro.
+facilmente modellabili in questo modo anziché tramite _request_ HTTP. Queste sono comunque utilizzate per implementare comandi e
+query che i microservizi si fanno tra loro.
 
 Benché sia un middleware per la comunicazione asincrona, questo non vuol dire che non sia supportata una comunicazione che segue
 il paradigma "remote procedure call", anche se sarebbe più corretto dire "request-response", dato che RPC, nella sua forma
@@ -100,17 +100,6 @@ Akka è un framework per la programmazione ad attori, che permette di gestire tu
 loro terminazione. Un sistema ad attori è fatto da un "root actor", o attore guardiano, che rappresenta il sistema stesso ed è
 responsabile di creare tutti gli altri attori e dare il via al sistema. La terminazione di questo attore comporta la terminazione
 del sistema stesso.
-
-Un attore è un'entità reattiva, che esegue il proprio comportamento in corrispondenza della ricezione dei messaggi che riceve
-dagli altri attori che fanno parte del sistema. È capace di modificare il proprio stato interno e il proprio comportamento a
-seconda del tipo di messaggi inviatigli. Questo significa che ogni attore è dotato di una "message box" dove possono essere
-lasciati i messaggi che riceve. Non è necessario sapere dove l'attore si trova, ma solamente qual è il suo identificatore, per
-inviargli un messaggio. Le primitive di base che un attore ha a disposizione sono dunque: "send" per inviare un messaggio ad un
-altro attore, "become" per modificare il proprio comportamento e "spawn" per creare un attore figlio. Ogni attore incapsula un
-proprio flusso di controllo, indipendente da quello degli altri, ed esegue il proprio comportamento secondo una semantica di tipo
-"macro-steps" o "run-to-completion": mentre lo esegue, non può essere effettuata la ricezione di nessun altro messaggio e la
-conseguente esecuzione concorrente del proprio stesso comportamento. Questo implica che un attore non può effettuare chiamate
-bloccanti come parte del suo comportamento.
 
 In Akka, la comunicazione tra attori è permessa secondo due tipi di pattern: "fire and forget", ovverosia l'invio di un messaggio
 senza attendere una risposta o una conferma di avvenuta ricezione, rappresentata dall'operatore "tell", e "request-response",
