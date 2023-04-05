@@ -43,6 +43,8 @@ trova sia sulla rete di default costruita da Docker compose, in modo tale da pot
 accessibile, sia su quella dei container di Ditto, così da poter accedere ai loro servizi. Quest'ultima rete è infatti dichiarata
 nel file di configurazione Docker compose come "external".
 
+![Diagramma UML di deployment per il sistema finale](/toys-store/assets/images/system_deployment.png)
+
 Inoltre, mentre il sistema veniva realizzato, è stato richiesto dal cliente di realizzare delle demo che mostrassero il
 funzionamento del sistema. Queste demo sono pensate per essere messe in esecuzione su di una macchina di test, non di produzione,
 perciò che non necessariamente, anzi, sicuramente non possiede le prestazioni necessarie per mettere in piedi il sistema.
@@ -64,6 +66,8 @@ sono direttamente esposti come un qualsiasi altro processo in esecuzione che apr
 modo è possibile accedere al _database_ PostgreSQL locale che agisce come surrogato dei diversi container "Postgres" che fungevano
 da data layer per i diversi microservizi. In questo modo si alleggeriscono i requisiti dell'_host_ da usare per la demo, a costo
 di minor sicurezza e disaccoppiamento, anche se in fase di prova del sistema queste ultime proprietà non sono desiderate.
+
+![Diagramma UML di deployment per il sistema demo](/toys-store/assets/images/demo_deployment.png)
 
 <div>
     <div style="text-align: center"><a href="#">Torna su</a></div>
