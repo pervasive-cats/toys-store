@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/pervasive-cats/toys-store/compare/v1.0.0...v1.0.1) (2023-04-09)
+
+
+### Bug Fixes
+
+* fix missing env variables exporting in install script ([1a11668](https://github.com/pervasive-cats/toys-store/commit/1a11668d4568b596fe34351634c6e1cb96f945be))
+
 # 1.0.0 (2023-03-14)
 
 
