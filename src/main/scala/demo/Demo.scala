@@ -31,10 +31,12 @@ import akka.http.scaladsl.client.RequestBuilding.Post
 import akka.http.scaladsl.client.RequestBuilding.Put
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.unmarshalling.Unmarshal
+import io.getquill.*
 import org.eclipse.ditto.base.model.common.HttpStatus
 import org.eclipse.ditto.client.DittoClient
 import org.eclipse.ditto.json.JsonObject
 import org.eclipse.ditto.messages.model.Message
+import org.eclipse.ditto.policies.model.PolicyId
 import org.eclipse.ditto.things.model.Thing
 import org.eclipse.ditto.things.model.ThingId
 import org.eclipse.ditto.things.model.signals.commands.exceptions.ThingNotAccessibleException
@@ -57,6 +59,20 @@ object Demo extends SprayJsonSupport {
 
   private val responsePrefix = ">> [RESPONSE] "
 
+  private val ctx: PostgresJdbcContext[SnakeCase] = PostgresJdbcContext[SnakeCase](SnakeCase, "ctx")
+
+  import ctx.*
+
+  private case class ItemsRows(
+    storeId: Long,
+    shelvingGroupId: Long,
+    shelvingId: Long,
+    shelfId: Long,
+    itemsRowId: Long,
+    catalogItem: Long,
+    count: Int
+  )
+
   private def initializeStore(
     httpClient: HttpExt,
     dittoClient: DittoClient,
@@ -65,7 +81,7 @@ object Demo extends SprayJsonSupport {
     using
     ExecutionContext,
     ClassicActorSystem
-  ): (Long, Long, Long, Long, Long) = {
+  ): (Long, Long, Long, Long, Long, (Long, Long, Long, Long)) = {
     // Cart addition
     println(">> [BEGIN] Cart addition, press enter after cart is added")
     val cartAdditionResponse = Await.result(
@@ -123,7 +139,17 @@ object Demo extends SprayJsonSupport {
     )
     println(">> [END] Second item addition: press enter to continue")
     StdIn.readLine()
-    (cart.id, itemCategory.id, catalogItem.id, firstItemId, secondItemId)
+    println(">> [BEGIN] Shelving addition")
+    val shelvingGroup = 0
+    val shelving = 0
+    val shelf = 0
+    val itemsRow = 0
+    ctx.run(
+      query[ItemsRows].insertValue(lift[ItemsRows](ItemsRows(store, shelvingGroup, shelving, shelf, itemsRow, catalogItem.id, 2)))
+    )
+    println(">> [END] Shelving addition: press enter to continue")
+    StdIn.readLine()
+    (cart.id, itemCategory.id, catalogItem.id, firstItemId, secondItemId, (shelvingGroup, shelving, shelf, itemsRow))
   }
 
   private def customerLogin(httpClient: HttpExt)(using ExecutionContext, ClassicActorSystem): (String, String) = {
@@ -226,6 +252,37 @@ object Demo extends SprayJsonSupport {
     )
   }
 
+  private def deleteThing(thingName: String, dittoClient: DittoClient, thingId: String): Unit = {
+    println(s">> [BEGIN] $thingName removal")
+    dittoClient
+      .twin
+      .delete(ThingId.of(thingId))
+      .thenCompose(_ => dittoClient.policies().delete(PolicyId.of(thingId)))
+      .toCompletableFuture
+      .get()
+    println(s">> [END] $thingName removal")
+    println(s"! [BEGIN] $thingName missing as digital twin in Ditto service")
+    try {
+      dittoClient
+        .twin
+        .forId(ThingId.of(thingId))
+        .retrieve
+        .toCompletableFuture
+        .get()
+      throw IllegalStateException()
+    } catch {
+      case c: ExecutionException =>
+        c.getCause match {
+          case t: ThingNotAccessibleException if t.getHttpStatus === HttpStatus.NOT_FOUND =>
+            println(s"! [RESPONSE] $thingName not found")
+          case _ => throw IllegalStateException()
+        }
+      case _ => throw IllegalStateException()
+    }
+    StdIn.readLine()
+    println("! [END] Press enter to continue")
+  }
+
   private def shutdown(
     httpClient: HttpExt,
     dittoClient: DittoClient,
@@ -236,7 +293,8 @@ object Demo extends SprayJsonSupport {
     firstItemId: Long,
     secondItemId: Long,
     customer: String,
-    password: String
+    password: String,
+    shelving: (Long, Long, Long, Long)
   )(
     using
     ExecutionContext,
@@ -336,7 +394,21 @@ object Demo extends SprayJsonSupport {
       case _ => throw IllegalStateException()
     }
     println("! [END] Press enter to continue")
-    StdIn.readLine()
+    // All store things removal
+    ctx.run(
+      query[ItemsRows]
+        .filter(i =>
+          i.storeId === lift[Long](store)
+          && i.shelvingGroupId === lift[Long](shelving._1)
+          && i.shelvingId === lift[Long](shelving._2)
+          && i.shelfId === lift[Long](shelving._3)
+          && i.itemsRowId === lift[Long](shelving._4)
+        )
+        .delete
+    )
+    deleteThing("Shelving", dittoClient, s"io.github.pervasivecats:shelving-$store-${shelving._1}-${shelving._2}")
+    deleteThing("Anti-theft system", dittoClient, s"io.github.pervasivecats:antiTheftSystem-$store")
+    deleteThing("Drop system", dittoClient, s"io.github.pervasivecats:dropSystem-$store")
   }
 
   private def printCartState(client: DittoClient, cartId: Long, store: Long): Unit = {
@@ -365,7 +437,8 @@ object Demo extends SprayJsonSupport {
     // Store initialization
     println("\n> [BEGIN] Store initialization\n")
     val store = 999
-    val (cartId, itemCategoryId, catalogItemId, firstItemId, secondItemId) = initializeStore(httpClient, dittoClient, store)
+    val (cartId, itemCategoryId, catalogItemId, firstItemId, secondItemId, shelving) =
+      initializeStore(httpClient, dittoClient, store)
     println("> [END] Store initialization\n\n")
 
     // Customer entering store
@@ -402,7 +475,36 @@ object Demo extends SprayJsonSupport {
     StdIn.readLine()
     println("> [END] Customer dragging cart\n\n")
 
-    // Catalog item lifting
+    // Catalog items lifting
+    println("> [BEGIN] Customer lifting item: press enter after noting that two items has been lifted\n")
+    dittoClient
+      .live
+      .forId(ThingId.of(s"io.github.pervasivecats:shelving-$store-${shelving._1}-${shelving._2}"))
+      .message[String]
+      .from
+      .subject("catalogItemLiftingRegistered")
+      .payload(
+        JsObject(
+          "shelfId" -> shelving._3.toJson,
+          "itemsRowId" -> shelving._4.toJson
+        ).compactPrint
+      )
+      .send()
+    dittoClient
+      .live
+      .forId(ThingId.of(s"io.github.pervasivecats:shelving-$store-${shelving._1}-${shelving._2}"))
+      .message[String]
+      .from
+      .subject("catalogItemLiftingRegistered")
+      .payload(
+        JsObject(
+          "shelfId" -> shelving._3.toJson,
+          "itemsRowId" -> shelving._4.toJson
+        ).compactPrint
+      )
+      .send()
+    StdIn.readLine()
+    println("> [END] Customer lifting items\n\n")
 
     // First item insertion into cart
     println("> [BEGIN] Customer inserts item into cart: press enter after noting that it is indeed happened\n")
@@ -419,8 +521,56 @@ object Demo extends SprayJsonSupport {
     println("> [END] Customer inserts item into cart\n\n")
 
     // First item removal with drop system
+    println("> [BEGIN] Customer returns the first item: press enter after the item details have been shown")
+    println(">         and again after noting that the item has effectively been returned\n")
+    dittoClient
+      .live
+      .forId(ThingId.of(s"io.github.pervasivecats:dropSystem-$store"))
+      .message[String]
+      .from
+      .subject("itemInsertedIntoDropSystem")
+      .payload(
+        JsObject(
+          "itemId" -> firstItemId.toJson,
+          "catalogItem" -> catalogItemId.toJson
+        ).compactPrint
+      )
+      .send()
+    StdIn.readLine()
+    dittoClient
+      .live
+      .forId(ThingId.of(s"io.github.pervasivecats:dropSystem-$store"))
+      .message[String]
+      .from
+      .subject("itemReturned")
+      .payload(
+        JsObject(
+          "itemId" -> firstItemId.toJson,
+          "catalogItem" -> catalogItemId.toJson
+        ).compactPrint
+      )
+      .send()
+    StdIn.readLine()
+    showItem(httpClient, firstItemId, catalogItemId, store)
+    println("> [END] Customer returns an item\n\n")
 
-    // Second item neared to anti-theft system
+    // Second item brought closer to anti-theft system
+    println("> [BEGIN] Customer brings item near anti-theft system: press enter after noting that the alarm is raised\n")
+    dittoClient
+      .live
+      .forId(ThingId.of(s"io.github.pervasivecats:antiTheftSystem-$store"))
+      .message[String]
+      .from
+      .subject("itemDetected")
+      .payload(
+        JsObject(
+          "itemId" -> secondItemId.toJson,
+          "catalogItem" -> catalogItemId.toJson
+        ).compactPrint
+      )
+      .send()
+    StdIn.readLine()
+    println("> [END] Customer brings item near anti-theft system\n\n")
 
     // Cart locked
     println("> [BEGIN] Cart locking, press enter after cart is locked\n")
@@ -429,7 +579,19 @@ object Demo extends SprayJsonSupport {
 
     // System shutdown
     println("> [BEGIN] System shutdown\n")
-    shutdown(httpClient, dittoClient, store, cartId, itemCategoryId, catalogItemId, firstItemId, secondItemId, customer, password)
+    shutdown(
+      httpClient,
+      dittoClient,
+      store,
+      cartId,
+      itemCategoryId,
+      catalogItemId,
+      firstItemId,
+      secondItemId,
+      customer,
+      password,
+      shelving
+    )
     println("> [END] System shutdown")
     actorSystem.whenTerminated.foreach[Unit](_ => sys.exit(0))
     actorSystem.terminate()
