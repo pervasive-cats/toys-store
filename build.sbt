@@ -30,7 +30,9 @@ lazy val root = project
       akkaStream,
       akkaHttp,
       akkaHttpSprayJson,
-      ditto
+      ditto,
+      postgresql,
+      quill
     ),
     wartremoverErrors ++= Warts.allBut(Wart.ImplicitParameter),
     version := "1.0.1",
