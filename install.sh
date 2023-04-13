@@ -66,6 +66,45 @@ ditto {
     thingModel = "https://raw.githubusercontent.com/pervasive-cats/toys-store-carts/main/cart.jsonld"
 }
 EOF
+    elif [[ "$MICROSERVICE_NAME" == "stores" ]]; then
+        cat > ./"$MICROSERVICE_NAME"/application.conf <<-EOF
+repository {
+    dataSourceClassName = org.postgresql.ds.PGSimpleDataSource
+    dataSource {
+        user = $DB_USERNAME
+        password = $DB_PASSWORD
+        databaseName = $MICROSERVICE_NAME
+        portNumber = 5432
+        serverName = postgres_$MICROSERVICE_NAME
+    }
+    connectionTimeout = 30000
+}
+server {
+    portNumber = $SERVER_PORT_NUMBER
+    hostName = 0.0.0.0
+}
+messageBroker {
+    username = $RMQ_USERNAME
+    password = $RMQ_PASSWORD
+    virtualHost = "/"
+    portNumber = 5672
+    hostName = rabbitmq
+}
+ditto {
+    hostName = ditto-things-1
+    portNumber = 8080
+    username = $DT_USERNAME
+    password = $DT_PASSWORD
+    namespace = io.github.pervasivecats
+    thingModelAntiTheftSystem = "https://raw.githubusercontent.com/pervasive-cats/toys-store-stores/main/antiTheftSystem.jsonld"
+    thingModelDropSystem = "https://raw.githubusercontent.com/pervasive-cats/toys-store-stores/main/dropSystem.jsonld"
+    thingModelShelving = "https://raw.githubusercontent.com/pervasive-cats/toys-store-stores/main/shelving.jsonld"
+}
+itemServer {
+    hostName = items
+    portNumber = 8083
+}
+EOF
     else
         cat > ./"$MICROSERVICE_NAME"/application.conf <<-EOF
 repository {

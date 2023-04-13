@@ -13,3 +13,7 @@ services:
     image: toys-store/carts
     build: ./carts
     network_mode: "host"
+  stores:
+    image: toys-store/stores
+    build: ./stores
+    network_mode: "host"

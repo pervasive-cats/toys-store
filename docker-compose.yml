@@ -44,6 +44,7 @@ services:
     depends_on:
       - postgres_items
       - rabbitmq
+    hostname: items
     ports:
       - "8083:8080"
   postgres_carts:

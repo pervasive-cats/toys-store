@@ -30,8 +30,8 @@ echo "Ditto started";
 RABBIT_CONTAINER=$(docker run -e RABBITMQ_DEFAULT_USER="$RMQ_USERNAME" -e RABBITMQ_DEFAULT_PASS="$RMQ_PASSWORD" --network="host" -d rabbitmq:3.11.7);
 
 while true; do
-    LOG_LINES=$(docker logs $RABBIT_CONTAINER | { grep "Server startup complete" || true; } | wc -l);
-    if [[ "$LOG_LINES" > "0" ]];
+    LOG_LINES=$(docker logs "$RABBIT_CONTAINER" | { grep "Server startup complete" || true; } | wc -l);
+    if [[ "$LOG_LINES" -gt "0" ]];
     then
       break;
     fi;
@@ -40,7 +40,7 @@ done;
 
 echo "RabbitMQ started";
 
-MICROSERVICES=("users" "items" "carts");
+MICROSERVICES=("users" "items" "carts" "stores");
 
 for INDEX in "${!MICROSERVICES[@]}"; do
     MICROSERVICE_NAME=${MICROSERVICES[$INDEX]};
@@ -77,6 +77,45 @@ ditto {
     password = $DT_PASSWORD
     namespace = io.github.pervasivecats
     thingModel = "https://raw.githubusercontent.com/pervasive-cats/toys-store-carts/main/cart.jsonld"
+}
+EOF
+    elif [[ "$MICROSERVICE_NAME" == "stores" ]]; then
+        cat > ./"$MICROSERVICE_NAME"/application.conf <<-EOF
+repository {
+    dataSourceClassName = org.postgresql.ds.PGSimpleDataSource
+    dataSource {
+        user = $DB_USERNAME
+        password = $DB_PASSWORD
+        databaseName = $MICROSERVICE_NAME
+        portNumber = 5432
+        serverName = localhost
+    }
+    connectionTimeout = 30000
+}
+server {
+    portNumber = $SERVER_PORT_NUMBER
+    hostName = localhost
+}
+messageBroker {
+    username = $RMQ_USERNAME
+    password = $RMQ_PASSWORD
+    virtualHost = "/"
+    portNumber = 5672
+    hostName = localhost
+}
+ditto {
+    hostName = localhost
+    portNumber = 8080
+    username = $DT_USERNAME
+    password = $DT_PASSWORD
+    namespace = io.github.pervasivecats
+    thingModelAntiTheftSystem = "https://raw.githubusercontent.com/pervasive-cats/toys-store-stores/main/antiTheftSystem.jsonld"
+    thingModelDropSystem = "https://raw.githubusercontent.com/pervasive-cats/toys-store-stores/main/dropSystem.jsonld"
+    thingModelShelving = "https://raw.githubusercontent.com/pervasive-cats/toys-store-stores/main/shelving.jsonld"
+}
+itemServer {
+    hostName = localhost
+    portNumber = 8083
 }
 EOF
     else
