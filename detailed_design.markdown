@@ -31,7 +31,7 @@ quello antitaccheggio, si è utilizzato il paradigma dei "Digital Twin". In ques
 puramente virtuali degli _asset_ fisici, queste possono interamente essere incapsulate e manipolate dai corrispondenti microservizi.
 Per di più, essendo queste rappresentazioni quelle che contengono la totalità dello stato osservabile delle controparti fisiche,
 oltre alla logica che permette l'attuazione del funzionamento previsto a partire dai dati provenienti dai sensori che compongono il
-_physical asset_, non è necessario dover dividere il sistema a metà. Lo _asset_ fisico dovrà solamente preoccuparsi di mettere in
+_physical asset_, non è necessario dover dividere il sistema a metà. L'_asset_ fisico dovrà solamente preoccuparsi di mettere in
 atto le azioni che gli possono essere impartite e notificare il microservizio di riferimento degli eventi predeterminati.
 
 Al cuore di ogni microservizio, il suo flusso di controllo è gestito da un sistema ad attori. È stato deciso di utilizzare questo
@@ -217,11 +217,19 @@ per fare in modo che tutti gli eventi nel sistema vengano gestiti da parte dello
 
 ## Digital twin
 
-What is a digital twin?
+L'aspetto innovativo del progetto realizzato è la pervasiva digitalizzazione delle componenti di un negozio che sono coinvolte durante un processo d'acquisto: gli oggetti da acquistare e il negozio stesso. Dotando tali componenti di identificatori, sensori e attuatori un cliente può interagire in autonomia con il "negozio smart" e lasciare che la logica di acquisto sia gestita dal sistema in completa autonomia.
 
-Where used?
+Per gestire ed incorporare nel sistema i dati generati dai _device_ presenti nei negozi è risultato naturale adottare la visione dei _Digital Twin_: ogni dispositivo fisicamente presente nel negozio è rappresentato nel sistema con la sua esatta controparte digitale, creando così un mondo virtuale parallelo a quello reale. Il sistema ha accesso alla visione astratta dei negozi fisici e può interagire con essi attraverso la loro controparte digitale, che altro non è che un'interfaccia che comporta separazione dall'implementazione fisica dei dispositivi smart. I device fisici sono in continua comunicazione con la loro controparte digitale, fornendo così una visione _real time_ del sistema. 
 
-Why DT? Why not?
+La visione _Digital Twin_ apporta un grande valore di business all'attività: consente agli amministratori della catena di negozi di avere una visione d'insieme estremamente accurata e dettagliata dell'attività grazie alle informazioni raccolte accessibili da una dashboard, così come gli impiegati dei singoli negozi possono visualizzare lo stato corrente del proprio negozio e rimanere informati su eventi rilevanti. I clienti possono inoltre visualizzare informazioni sui prodotti e sul processo di acquisto in atto tramite l'applicazione su smartphone; si consente quindi anche ai clienti di interagire con il "negozio virtuale", ottenendo una sorta di _augmented reality_.
+
+Per quanto riguarda l'integrazione dei digital twin nel progetto è stato adottato lo standard del _Web of Things_ in accordanza con il W3C: ogni smart thing è rappresentata da una propria interfaccia, la _Thing Description_, che la espone al resto del programma in modo agnostico dall'implementazione vera e propria. Poichè lo standard WoT si basa sui principali protocolli internet, e modella le smart things e le loro _interaction affordances_ come risorse web accessibili tramite URI, l'integrazione dei digital twin nel contesto del progetto come sistema distribuito REST è risultata _seamless_, garantendo i principi di modularità, scalabilità e interoperabilità richiesti.
+
+I digital twin presenti nel sistema sono i seguenti:
+- __cart__: ogni carrello è modellato individualmente e ha un identificativo univoco all'interno del negozio;
+- __drop system__: un sistema di restituzione di prodotti per negozio; 
+- __anti-theft system__: un sistema di allarme per negozio, rileva la presenza di un prodotto non associato ad un processo d'acquisto fuori dal negozio;
+- __shelving__: ogni scaffalatura è modellata individualmente. Una scaffalatura è identificata dal negozio, gondola in cui si trova e identificatore univoco all'interno della gondola. Ogni scaffalatura mantiene le informazioni degli scaffali che possiede e, per ogni scaffale, la fila di prodotti, entrambi aventi un identificatore univoco al rispettivo gruppo.
 
 ## Attori
 

@@ -51,6 +51,112 @@ ma in questo progetto non si è voluto approfondire questo aspetto. Dopotutto, s
 ambiente completamente controllato dall'azienda che lo ha commissionato, per cui i rischi legati alla sicurezza delle _thing_
 sono minimi.
 
+Qui di seguito degli snippet del "Thing Model" della classe di _digital twin_ "anti-theft system", definita in formato .jsondl:
+```
+{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "title": "AntiTheftSystem",
+    "@type": "tm:ThingModel",
+    "base": "http://localhost:8080/api/2/things/",
+    "description": "The anti-theft system in its store.",
+    "securityDefinitions": {
+        "nosec_sc": {
+            "scheme": "nosec"
+        }
+    },
+    "security": "nosec_sc",
+    "uriVariables": {
+        "storeId": {
+          "title": "storeId",
+          "description": "The id of the store the anti-theft system is in.",
+          "type": "integer",
+          "minimum": 0
+        }
+    },
+    "properties": {
+        "storeId": {
+            "title": "storeId",
+            "observable": false,
+            "readOnly": true,
+            "description": "The id of store the anti-theft system is in.",
+            "type": "integer",
+            "minimum": 0,
+            "forms": [
+                {
+                    "op": [
+                        "readproperty"
+                    ],
+                    "href": "io.github.pervasivecats:antiTheftSystem-{storeId}/attributes/storeId"
+                }
+            ]
+        }
+    },
+    ...
+```
+In "uriVariables" vengono definite le proprietà della _thing_ che appaiono negli URI presenti nel _Thing Model_, ovvero le proprietà che comporranno l'identificatore univoco di ogni _Thing Description_ che verrà generata a partire dal _Thing Model_.
+Invece "properties" definisce la modellazione dei dati che costituiscono le proprietà della _thing_. 
+
+In "forms" viene descritto l'_endpoint_ HTTP della proprietà, marcandola come "readproperty" e specificando l'URI con cui è possibile accedervi.
+
+```
+... ,
+"actions": {
+    "raiseAlarm": {
+        "title": "raiseAlarm",
+        "description": "Raises the anti-theft alarm, which will emit a sound for a certain amount of time.",
+        "forms": [
+            {
+                "op": [
+                    "invokeaction"
+                ],
+                "href": "io.github.pervasivecats:antiTheftSystem-{storeId}/messages/inbox/raiseAlarm",
+                "contentType": "none/none",
+                "response": {
+                    "contentType": "application/json"
+                }
+            }
+        ],
+        "safe": false,
+        "idempotent": false,
+        "input": {},
+        "output": { ... }
+    }
+},
+"events": {
+    "itemDetected": {
+        "title": "itemDetected",
+        "description": "The anti-theft alarm has detected an item exiting the store",
+        "forms": [
+            {
+                "op": [
+                    "subscribeevent"
+                ],
+                "href": "io.github.pervasivecats:antiTheftSystem-{storeId}/messages/outbox/itemDetected",
+                "contentType": "application/json"
+            }
+        ],
+        "data": {
+            "type": "object",
+            "required": [
+                "catalogItemId",
+                "itemId"
+            ],
+            "properties": {
+                "catalogItemId": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "itemId": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        }
+    }
+}
+```
+Azioni ed eventi della _thing_ vengono definiti sempre tramite il campo "forms", dove in questo caso vengono definiti anche gli eventuali input e output dei messaggi.
+
 ## RabbitMQ
 
 RabbitMQ è il più celebre, nonché rodato middleware per la comunicazione asincrona tra sistemi distribuiti. Essendo pensato per
