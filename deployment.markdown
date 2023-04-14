@@ -19,7 +19,7 @@ Dopodiché, lo _script_ genera il file di configurazione adatto per ciascun micr
 del database e nome dell'host a cui si trova il DBMS che il microservizio utilizzerà come implementazione del suo data layer. Nel
 file di configurazione vengono specificati anche la porta mediante la quale il sistema host potrà accedere al container del
 microservizio una volta che sarà in esecuzione e il nome utente e la password dell'utente che accederà al server RabbitMQ. Se il
-microservizio deve gestire anche i Digital Twin di alcune _thing_, come "carts" e "stores", nel file vengono inseriti ance nome
+microservizio deve gestire anche i Digital Twin di alcune _thing_, come "carts" e "stores", nel file vengono inseriti anche nome
 utente e password dell'utente del servizio Ditto. Il file di configurazione viene facilmente generato, essendo un file in formato
 HOCON, un'estensione di JSON fatta da Lightbend.
 
@@ -48,10 +48,10 @@ nel file di configurazione Docker compose come "external".
 Inoltre, mentre il sistema veniva realizzato, è stato richiesto dal cliente di realizzare delle demo che mostrassero il
 funzionamento del sistema. Queste demo sono pensate per essere messe in esecuzione su di una macchina di test, non di produzione,
 perciò che non necessariamente, anzi, sicuramente non possiede le prestazioni necessarie per mettere in piedi il sistema.
-Certamente la macchina dovrà essere in grado di far funzionare una versione ridotta dei servizi utilizzati. Per questo motivo, si
-è deciso di creare una versione semplificata dello _script_ Bash per la demo, non troppo diversa da quello originale.
+Certamente la macchina dovrà essere in grado di far funzionare una versione ridotta dei servizi utilizzati. Per questo motivo si
+è deciso di creare una versione semplificata dello _script_ Bash per la demo, non troppo diverso da quello originale.
 
-Lo _script_ per la demo prende come input da riga di comando gli stessi dello _script_ originale e lancia i servizi di Eclipse
+Lo _script_ per la demo prende come input da riga di comando gli stessi input dello _script_ originale e lancia i servizi di Eclipse
 Ditto in maniera identica al precedente. Dopodiché, però, lancia direttamente il container del server RabbitMQ, aspettando che nel
 suo log compaia la stampa che indica che l'avvio è stato completato con successo. In seguito, vengono creati allo stesso modo come
 in precedenza i file di configurazione per ciascun microservizio, a cui vengono aggiunte le informazioni su Ditto per tutti e soli

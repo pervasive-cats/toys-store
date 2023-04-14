@@ -9,8 +9,7 @@ permalink: /implementation
 </div>
 <br/>
 
-Per l'implementazione della soluzione proposta, sono state utilizzate diverse tecnologie nelle diverse fasi del progetto. Sono
-sati utilizzati due middleware: "Eclipse Ditto", per la realizzazione dei digital twin, e "RabbitMQ", per la comunicazione
+Per l'implementazione della soluzione proposta sono state utilizzate svariate tecnologie nelle diverse fasi del progetto. Si è fatto uso di due middleware: "Eclipse Ditto", per la realizzazione dei digital twin, e "RabbitMQ", per la comunicazione
 asincrona e message-oriented dei microservizi. Per permettere comunicazione asincrona è stata utilizzata anche la tecnologia delle
 websocket, che permettono la creazione di canali full-duplex tra client e server. Inoltre, sia durante il testing che il
 deployment, è stata utilizzata la tecnologia per la creazione di container "Docker", in modo da avere degli ambienti di esecuzione

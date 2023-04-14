@@ -99,7 +99,7 @@ posto.
 In caso il dispositivo che il cliente utilizza per accedere al sistema negozio dovesse spegnersi o malfunzionare, sarà premura
 del cliente notificare il responsabile di negozio. Costui verificherà il contenuto del carrello del cliente, per identificare
 quest'ultimo e quindi il suo processo di acquisto ed osservare il suo stato attuale. A questo punto, il responsabile annullerà la
-procedura d'acquisto e ne inizierà una nuova. Il cliente verrà dotato di un altro dispositivo, la quale comunicherà la presenza
+procedura d'acquisto e ne inizierà una nuova. Il cliente verrà dotato di un altro dispositivo, il quale comunicherà la presenza
 all'interno del negozio al sistema permettendo il riavvio della procedura. Il responsabile di negozio potrà quindi associare il
 carrello che stava usando il cliente in precedenza a quest'ultimo, così come potrà aggiungere all'interno del carrello tutti i
 prodotti già scelti dal cliente.
@@ -292,7 +292,7 @@ Un cliente, utilizzando una scaffalatura, vuole poter:
 L'event storming, avvenuto in seguito al domain storytelling iniziale e alla raccolta dei requisiti funzionali mediante i diagrammi
 dei casi d'uso, necessariamente ha seguito la traccia da questi già segnata. L'obiettivo da raggiungere con questa tecnica è stato
 infatti quello di riordinare ulteriormente le informazioni già raccolte in senso temporale. Questo ha significato cercare di
-raccogliere tutte le _story_ in un unica grande sequenza di eventi che si sussegue, mostrando però anche le possibili ramificazioni
+raccogliere tutte le _story_ in un'unica grande sequenza di eventi che si sussegue, mostrando però anche le possibili ramificazioni
 e gli eventi generati da attori che portano avanti le proprie azioni in parallelo.
 
 La sequenza principale non poteva che essere quella inerente agli eventi di un cliente che interagisce con il sistema negozio, in
@@ -383,7 +383,7 @@ che motiva l'intero sistema. I pagamenti saranno chiaramente gestiti dal bounded
 
 Una volta che la procedura di acquisto è terminata, il cliente può anche fare logout dall'applicazione o addirittura de-registrarsi.
 Entrambe le operazioni sono gestite dal bounded context "users". Il responsabile di negozio può decidere di sbloccare un carrello
-per rimetterlo a posto e poi bloccarlo nuovamente, utilizzando il bounded context "carrelli". Finiti i suoi compiti, anche un
+per rimetterlo a posto e poi bloccarlo nuovamente, utilizzando il bounded context "carrelli". Finiti i suoi compiti, un
 responsabile di negozio può fare logout o anche de-registrarsi, utilizzando la dashboard che farà gestire queste operazioni al
 bounded context "utenti".
 

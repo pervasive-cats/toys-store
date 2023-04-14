@@ -9,10 +9,9 @@ permalink: /detailed_design
 </div>
 <br/>
 
-Una volta realizzati i bounded context canvas, si tratta di completarli con le relazioni di context mapping che li mettono in
-relazione. Per questo motivo, si è entrati maggiormente nel dettaglio di ciascun bounded context andando a definire l'architettura
+Una volta realizzati i bounded context canvas si tratta di completarli con la _context map_ che illustra le relazioni fra di essi. Per questo motivo, si è entrati maggiormente nel dettaglio di ciascun bounded context andando a definire l'architettura
 interna di ciascuno di essi: quali sono i suoi componenti, di che tipo sono le sue relazioni con gli altri e come queste vengono
-realizzate. Lo strumento "context mapper" si è perciò rivelato doppiamente utile, oltre che definire la "context map" dura e pura,
+realizzate. Lo strumento "context mapper" si è perciò rivelato doppiamente utile: oltre che definire la "context map" dura e pura,
 ha permesso di specificare quali entities, quali value objects, quali services compongono la sua implementazione e com'è fatta
 l'implementazione della loro interfaccia. In questo modo, è stato possibile tradurre direttamente i file di modellazione
 dell'architettura in linguaggio scala, a cui poi è possibile far seguire la loro implementazione e il test.
@@ -44,7 +43,7 @@ nient'altro che non siano gli identificatori degli altri attori con cui comunica
 La fase di design di dettaglio, che prende in considerazione gli elementi più minuziosi, è stata svolta unicamente dal software
 architect in concomitanza con il team di sviluppo, dato che non coinvolge più informazioni di organizzazione o comunque relativi
 alla strategia aziendale per la conduzione del progetto. Al contrario, tutte le decisioni prese in questa fase coinvolgono
-principalmente il come il codice verrà strutturato, competenze che non sono proprie di un project manager.
+principalmente il modo in cui il codice verrà strutturato, competenze che non sono proprie di un project manager.
 
 ## Context mapping
 
@@ -53,7 +52,7 @@ Qui di seguito si può vedere la context map dei bounded context individuati.
 ![Context map dei bounded context individuati](/toys-store/assets/images/CM.png)
 
 È bene innanzitutto ricordare come "shopping", qui denominato "ShoppingContext", sia il bounded context più importante di tutti.
-Nel momento nel quale perciò "utenti" o "negozi", rispettivamente denominati "UsersContext" e "StoresContext" decidono di voler
+Nel momento nel quale "utenti" o "negozi", rispettivamente denominati "UsersContext" e "StoresContext", decidono di voler
 interagire con il primo, necessariamente lo faranno attraverso un "Open Host Service" utilizzando un "Published Language", ovvero
 il linguaggio definito mediante la combinazione di specifiche ReST API e per l'uso del _message broker_. In questo modo, il modello
 del bounded context può rimanere isolato al suo interno e non essere intaccato da cambiamenti dei "downstream". Allo stesso modo
@@ -74,6 +73,8 @@ interfacce si adegua sempre e comunque a quello dei bounded context, in quanto q
 attingere e perciò sfruttano quello dei servizi che utilizzano. La relazione tra sistemi che permettono l'interazione diretta con
 il cliente e i bounded context è sempre di tipo "partnership" perché questi sistemi possono sempre inviare eventi come notifiche
 e ricevere _command_ che permettono di modificare il loro stato o fanno compiere loro un'azione.
+
+## Modellazione dei Bounded Context
 
 Per quanto riguarda "UsersContext", è stato deciso di suddividerlo in tre "aggregate", uno per ciascuna tipologia di utente che
 deve gestire. Conseguentemente, ogni aggregate è dotato di una sola "entity" che fa da "root" che rappresenta la tipologia di
@@ -235,7 +236,7 @@ I digital twin presenti nel sistema sono i seguenti:
 
 Un attore è un'entità reattiva, che esegue il proprio comportamento in corrispondenza della ricezione dei messaggi che riceve
 dagli altri attori che fanno parte del sistema. È capace di modificare il proprio stato interno e il proprio comportamento a
-seconda del tipo di messaggi inviatigli. Questo significa che ogni attore è dotato di una "message box" dove possono essere
+seconda del tipo di messaggi inviatogli. Questo significa che ogni attore è dotato di una "message box" dove possono essere
 lasciati i messaggi che riceve. Non è necessario sapere dove l'attore si trova, ma solamente qual è il suo identificatore, per
 inviargli un messaggio. Le primitive di base che un attore ha a disposizione sono dunque: "send" per inviare un messaggio ad un
 altro attore, "become" per modificare il proprio comportamento e "spawn" per creare un attore figlio. Ogni attore incapsula un

@@ -45,7 +45,7 @@ luogo, i mock non avrebbero potuto rispondere come avrebbero invece fatto i serv
 In questo modo, i test così realizzati danno maggiori garanzie, in quanto effettuati utilizzando i veri componenti che saranno
 poi messi in esecuzione anche quando il sistema sarà in produzione.
 
-Per lanciare i componenti del sistema in fase di test, è stata utilizzato il framework "testcontainers-scala", capace di lanciare
+Per lanciare i componenti del sistema in fase di test è stato utilizzato il framework "testcontainers-scala", capace di lanciare
 in esecuzione e terminare dei container Docker utilizzando una configurazione minima. La sua integrazione con scalatest permette
 di avviarli prima dell'esecuzione dei test e di terminarli una volta che questi sono stati eseguiti, in maniera totalmente
 dichiarativa e senza entrare nei dettagli del funzionamento interno del framework. In questo modo sono stati avviati il message

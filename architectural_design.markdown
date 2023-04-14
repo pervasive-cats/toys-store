@@ -41,7 +41,7 @@ context - è ciò che genera introiti, è ciò che mantiene _engaged_ gli stakeh
 Si indica inoltre per ogni bounded context il ruolo che svolge il suo dominio in relazione al sistema nella sua interezza, gli
 elementi dello "ubiquitous language" che sono legati al sotto-dominio del bounded context e che servono per descriverlo e le
 decisioni di business, ovvero i vincoli sulle funzionalità offerte dal bounded context che dovranno essere tenute in considerazione
-durante l'implementazione del sotto-sistema associato. Ultimo, ma non per questo meno importante, sono le "inbound communications"
+durante l'implementazione del sotto-sistema associato. Infine vi sono le "inbound communications"
 e le "outbound communications", ovvero i comandi, le query e gli eventi che il bounded context riceve da sistemi esterni e invia
 ad altri sistemi. Questi due elementi sono forse i più importanti perché vincolano come sarà strutturato il context mapping
 effettuato successivamente, sia perché per ciascuna delle coppie sistema esterno - sistema interno è necessario indicare il tipo
@@ -62,7 +62,7 @@ Il diagramma emerso dalla fase di domain charting è stato il seguente.
 
 Come si può osservare, il primo sotto-dominio che incontriamo da sinistra verso destra è quello di "pagamenti". Sistemi di pagamento
 elettronico sono molto difficili da realizzare, in quanto devono modellare dei concetti principalmente appartenenti al mondo
-economico, con un implementazione che deve sottostare fortemente alle legislazioni dei paesi in cui questi sistemi operano. Allo
+economico, con un'implementazione che deve sottostare fortemente alle legislazioni dei paesi in cui questi sistemi operano. Allo
 stesso tempo, non è un sistema particolarmente importante per il business perché non è ciò che di innovativo questo sistema porta,
 non è ciò che è utile incrementare i ricavi o ridurre i costi di esercizio del committente. Senza dubbio, questo dominio è un
 "generic domain" ed ha senso che sia _outsourced_, creando una semplice interfaccia per permettere di comunicare tra il suo sistema
@@ -73,7 +73,7 @@ facili da realizzare, non a caso infatti saranno delle interfacce su un "data la
 domini, con una limitata capacità di elaborazione. Il loro modello sarà quindi esprimibile tramite metodi di modellazione più
 semplici come quello "entity-relationship" tipico dei _database_ relazionali. Sono relativamente poco importanti perché comunque
 trattenendo unicamente dei dati, non è qui che avviene la computazione che rende il sistema "smart". Sono perciò dei "supporting"
-domain. Non ci si aspettano che siano degli "hidden core" data la loro più o meno chiara modellazione. Il dominio "prodotti" è
+domain; non ci si aspetta che siano degli "hidden core" data la loro più o meno chiara modellazione. Il dominio "prodotti" è
 leggermente più importante di quello "utenti" data la sua particolarità e non presenza in tutti i sistemi.
 
 Successivamente sono presenti i due sotto-domini "negozi" e "carrelli", che sono ancora più importanti dei due precedenti per
@@ -140,9 +140,9 @@ Nel diagramma successivo è illustrata la descrizione del bounded context "carre
 
 ![Diagramma che descrive il bounded context "carrelli"](/toys-store/assets/images/Carts_bc.jpg)
 
-Questo bounded context è un "engagement generator" perché non è ciò che porta al guadagno del business, ma comunque i clienti
-vi interagiscono e lo mantengono interessato ed è "custom built" perché sarà realizzato internamente. Il ruolo del suo dominio è
-quello di "service provider" perché non è un semplice "information holder", con le informazioni che trattiene offre anche un
+Questo bounded context è un "engagement generator" perché non è ciò che porta al guadagno del business, però i clienti
+vi interagiscono, ed è "custom built" perché sarà realizzato internamente. Il ruolo del suo dominio è
+quello di "service provider" perché non è un semplice "information holder": con le informazioni che trattiene offre anche un
 servizio, ovvero quello di gestire i carrelli e fare in modo che rispondano correttamente agli input che gli utenti danno loro.
 
 I messaggi in ingresso più importanti sono infatti quelli che arrivano dall'interazione diretta dei clienti con il bounded context,

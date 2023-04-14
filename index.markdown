@@ -17,7 +17,7 @@ dotati di sensori ed attuatori, spostando la computazione negli oggetti, rendend
 Questo permette di ridurre e ripensare la componente umana nei negozi, in particolar modo il suo ruolo, senza però eliminarla
 completamente.
 
-La _software house_ che si è occupata dello sviluppo della soluzione è stata "Pervasive Cats S.r.l.s." e questo sito funge sia
+La _software house_ che si è occupata dello sviluppo della soluzione è stata "Pervasive Cats S.r.l.s." e questo sito funge sia da
 strumento per la disseminazione dei risultati, sia da corpus di conoscenze accumulate durante il progetto, in modo da non disperdere
 la conoscenza accumulata sul dominio in un'ottica di miglioramento ed estensione del progetto stesso. Le informazioni sono presentate
 in un ordine che è tradizionale per lo sviluppo software: dapprima i requisiti e la loro raccolta, poi la discussione delle scelte
