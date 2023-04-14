@@ -4,7 +4,7 @@ permalink: /devops
 ---
 
 <div>
-    <div style="width: 50%; float: left">Vai a <a href="/toys-store/detailed-design">Design di dettaglio</a></div>
+    <div style="width: 50%; float: left">Vai a <a href="/toys-store/detailed_design">Design di dettaglio</a></div>
     <div style="width: 50%; float: right; text-align: right">Vai a <a href="/toys-store/implementation">Implementazione</a></div>
 </div>
 <br/>

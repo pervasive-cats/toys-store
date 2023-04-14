@@ -74,7 +74,7 @@ attingere e perciò sfruttano quello dei servizi che utilizzano. La relazione tr
 il cliente e i bounded context è sempre di tipo "partnership" perché questi sistemi possono sempre inviare eventi come notifiche
 e ricevere _command_ che permettono di modificare il loro stato o fanno compiere loro un'azione.
 
-## Modellazione dei Bounded Context
+### Modellazione dei Bounded Context
 
 Per quanto riguarda "UsersContext", è stato deciso di suddividerlo in tre "aggregate", uno per ciascuna tipologia di utente che
 deve gestire. Conseguentemente, ogni aggregate è dotato di una sola "entity" che fa da "root" che rappresenta la tipologia di
@@ -165,8 +165,8 @@ opportuno, anche sfruttando _stack_ tecnologici completamente diversi, anche se 
 semplicità di sviluppo e rilascio. Inoltre, essendo di piccole dimensioni e indipendenti tra loro, è possibile automatizzare il
 loro processo di _deployment_, che bene si sposa con la metodologia "devops" che si è adottata in questo progetto.
 
-Il lato negativo di utilizzare un'architettura simile è il fatto che si sta così costruendo un sistema distribuito. Questo
-significa che per esso valgono tutti i problemi del caso, ovvero che nessuna componente può conoscere lo stato globale del sistema,
+L'adozione dell'architettura a microservizi implica naturalmente la realizzazione di un sistema distribuito, che ben si presta al contesto in cui si colloca il progetto per le proprietà di scalabilità e interoperabilità.
+Un sistema distribuito presenta però delle complicazioni: nessuna componente può conoscere lo stato globale del sistema,
 ma può averne solo una visione parziale fornitagli dagli altri componenti e non è possibile sincronizzare in modo assoluto i
 componenti tra di essi. Per questo motivo, non sono permesse transazioni per operazioni che coinvolgono più microservizi, ma ci si
 affida alla _eventual consistency_, e l'unico modo possibile per comunicare è a scambio di messaggi. Nessuna di queste due

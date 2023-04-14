@@ -10,7 +10,7 @@ permalink: /requirements
 <br/>
 
 La raccolta dei requisiti è stata costituita principalmente dal processo di "knowledge crunching". Il progetto ha una componente
-fortemente innovativa, per cui non esistono casi analoghi su cui potersi basare. A maggior ragione è perciò importante assicurarsi
+fortemente innovativa, per cui non esistono molti casi analoghi su cui potersi basare. A maggior ragione è perciò importante assicurarsi
 con i _domain experts_ che tutto il team di progetto sia a conoscenza del dominio e dei suoi dettagli, in modo da evitare
 incomprensioni e problemi in momenti più avanzati del processo di sviluppo, dove un errore è molto più costoso.
 
@@ -569,6 +569,7 @@ contesti diversi senza problemi;
   * I componenti del sistema devono essere quanto meno possibile dipendenti tra di loro, devono poter essere implementati
     indipendentemente, rilasciati indipendentemente, devono fallire indipendentemente tra loro;
 * Il sistema non deve mai interrompersi qualora si verifichi un errore, deve invece restituire un messaggio di errore;
+* Il sistema deve essere scalabile;
 * Le _user interfaces_ del sistema devono essere fluide, cioè non presentare _stuttering_ o _freezing_;
 * Il sistema deve poter gestire un carico di almeno una cinquantina di utenti senza subire fallimenti dovuti a sovraccarico;
 * La copertura degli _statements_ e dei _branches_ nella valutazione della _coverage_ deve essere pari o superiore all'80%;
@@ -584,6 +585,7 @@ sono stati individuati i seguenti requisiti implementativi:
 * Deve essere sfruttato lo strumento di _build automation_ "scala build tool" versione 1.8.0 o successive per automatizzare la
   compilazione, il _testing_ e il _deployment_ degli artefatti rilasciati;
 * Devono essere applicati i pattern tattici del _Domain Driven Design_ durante la progettazione e l'implementazione del sistema;
+* Si deve realizzare un sistema distribuito e _event-driven_;
 * La repository deve essere gestita attraverso il D.V.C.S. "git" e mantenuta sul servizio di _hosting_ "GitHub";
 * Deve essere sfruttata la tecnologia offerta da "GitHub" per effettuare _continuous integration_ e _continuous deployment_,
   ovvero "GitHub Actions";
