@@ -234,6 +234,8 @@ I digital twin presenti nel sistema sono i seguenti:
 
 ## Attori
 
+Si è scelto di fare uso del modello ad attori con lo scopo di realizzare una architettura _event driven_, in quanto il progetto è incentrato sull'esperienza di acquisto dei potenziali clienti. Ogni azione eseguita dal programma è in reazione alle interazioni umane con il sistema, ovvero eventi iniziati da clienti o impiegati. Inoltre il modello ad attori ha caratteristiche che ben si prestano al progetto: gli attori sono _self-contained_, operano a scambio di messaggi, sono dunque facilmente integrabili in un'architettura distribuita e scalabile.
+
 Un attore è un'entità reattiva, che esegue il proprio comportamento in corrispondenza della ricezione dei messaggi che riceve
 dagli altri attori che fanno parte del sistema. È capace di modificare il proprio stato interno e il proprio comportamento a
 seconda del tipo di messaggi inviatogli. Questo significa che ogni attore è dotato di una "message box" dove possono essere
@@ -245,9 +247,10 @@ proprio flusso di controllo, indipendente da quello degli altri, ed esegue il pr
 conseguente esecuzione concorrente del proprio stesso comportamento. Questo implica che un attore non può effettuare chiamate
 bloccanti come parte del suo comportamento.
 
-Where used?
-
-Why actors? Why not?
+In ogni microservizio sono presenti i seguenti tipi di attori:
+- __message broker actor__: gestisce le interazioni via scambio di messaggi con gli altri microservizi e con l'applicazione e dashboard dell'azienda;
+- __server actor__: gestisce le comunicazioni HTTP con applicazione e dashboard;
+- __digital twin actor__: ogni attore gestisce le interazioni con un tipo di _digital twin_.
 
 <br/>
 <div>
