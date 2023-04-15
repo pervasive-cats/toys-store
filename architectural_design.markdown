@@ -77,9 +77,7 @@ domain; non ci si aspetta che siano degli "hidden core" data la loro più o meno
 leggermente più importante di quello "utenti" data la sua particolarità e non presenza in tutti i sistemi.
 
 Successivamente sono presenti i due sotto-domini "negozi" e "carrelli", che sono ancora più importanti dei due precedenti per
-quanto riguarda il business. Questi due infatti sono domini unici al problema che si sta cercando di risolvere, che contengono i
-sistemi "smart" che opereranno in negozio e che permettono al negozio di raggiungere il suo obiettivo di essere più rapido perché
-concetto di carrello assieme ai suoi stati, mentre quella di "negozi" è comparabile a quella di "utenti". Questo perché un negozio
+quanto riguarda il business. Questi due sono specifici per il problema che si sta cercando di risolvere, in quanto contengono i sistemi "smart" che operano in negozio e che gli permettono di raggiungere il suo obiettivo di essere più rapido grazie all'assenza di casse. La complessità di "carrelli" è comparabile a quella di "prodotti" perché il modello è costituito solamente dal concetto di carrello assieme ai suoi stati, mentre quella di "negozi" è comparabile a quella di "utenti". Questo perché un negozio
 porta con sé molti più concetti da modellare, semplicemente a partire dal fatto che deve occuparsi di più tipi di sotto-sistemi
 diversi, mentre "carrelli" si occupa solamente, appunto, dei carrelli. Questo ha per conseguenza che "carrelli" è un dominio
 "supporting", mentre "negozi" è un dominio "core". Anche per "carrelli" non ci si aspetta che sia un "hidden core", mentre per

@@ -135,7 +135,7 @@ in tutti i file di progetto che contengono il riferimento alla versione, che vie
 che viene generato è il JAR eseguibile del progetto, qualora fosse possibile farlo, utilizzando il _tool_ "sbt assembly". Viene
 passato al _workflow_ di CD tramite una variabile d'ambiente predefinita se deve essere effettuata una release o una prerelease e
 il processo termina facendo _commit_ di tutti i file modificati durante la _release_ e effettuando la pubblicazione su GitHub.
-È in questo _workflow_ che vengono utilizzate le chiavi PGP per poter effettuare le operazioni di _commit_ e _release_ discusse in
+È in questo _workflow_ che vengono utilizzate le chiavi GPG per poter effettuare le operazioni di _commit_ e _release_ discusse in
 maniera autenticata e perciò capaci di soddisfare i vincoli di protezione dei _branch_.
 
 È sempre specificato in cima a ciascun file sorgente il "copyright statement" per quel file, indicante i diritti che l'organizzazione
@@ -162,7 +162,7 @@ anche gli _alert_ di sicurezza di "dependabot" perché renovate è capace di leg
 
 <div>
     <div style="text-align: center"><a href="#">Torna su</a></div>
-    <div style="width: 50%; float: left">Vai a <a href="/toys-store/detailed-design">Design di dettaglio</a></div>
+    <div style="width: 50%; float: left">Vai a <a href="/toys-store/detailed_design">Design di dettaglio</a></div>
     <div style="width: 50%; float: right; text-align: right">Vai a <a href="/toys-store/implementation">Implementazione</a></div>
 </div>
 <br/>
