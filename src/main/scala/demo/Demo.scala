@@ -73,6 +73,26 @@ object Demo extends SprayJsonSupport {
     count: Int
   )
 
+  private def addItem(
+    httpClient: HttpExt,
+    itemId: Long,
+    catalogItem: CatalogItem,
+    store: Long
+  )(
+    using
+    ExecutionContext,
+    ClassicActorSystem
+  ): Unit = {
+    val itemAdditionResponse = Await.result(
+      httpClient.singleRequest(Post(itemUri, ItemAdditionEntity(itemId, catalogItem.id, store))),
+      5.minutes
+    )
+    println(
+      responsePrefix +
+      Await.result(Unmarshal(itemAdditionResponse.entity).to[ResultResponseEntity[Item]], 5.minutes).result.toString
+    )
+  }
+
   private def initializeStore(
     httpClient: HttpExt,
     dittoClient: DittoClient,
@@ -118,25 +138,11 @@ object Demo extends SprayJsonSupport {
     StdIn.readLine()
     println(">> [BEGIN] First item addition")
     val firstItemId = 0
-    val firstItemAdditionResponse = Await.result(
-      httpClient.singleRequest(Post(itemUri, ItemAdditionEntity(firstItemId, catalogItem.id, store))),
-      5.minutes
-    )
-    println(
-      responsePrefix +
-      Await.result(Unmarshal(firstItemAdditionResponse.entity).to[ResultResponseEntity[Item]], 5.minutes).result.toString
-    )
+    addItem(httpClient, firstItemId, catalogItem, store)
     println(">> [END] First item addition")
     println(">> [BEGIN] Second item addition")
     val secondItemId = 1
-    val secondItemAdditionResponse = Await.result(
-      httpClient.singleRequest(Post(itemUri, ItemAdditionEntity(secondItemId, catalogItem.id, store))),
-      5.minutes
-    )
-    println(
-      responsePrefix +
-      Await.result(Unmarshal(secondItemAdditionResponse.entity).to[ResultResponseEntity[Item]], 5.minutes).result.toString
-    )
+    addItem(httpClient, secondItemId, catalogItem, store)
     println(">> [END] Second item addition: press enter to continue")
     StdIn.readLine()
     println(">> [BEGIN] Shelving addition")
@@ -249,6 +255,7 @@ object Demo extends SprayJsonSupport {
     println(
       responsePrefix
       + Await.result(Unmarshal(showItemResponse.entity).to[ResultResponseEntity[Item]], 5.minutes).result.toString
+      + "\n"
     )
   }
 
@@ -283,6 +290,31 @@ object Demo extends SprayJsonSupport {
     println("! [END] Press enter to continue")
   }
 
+  private def removeItem(
+    httpClient: HttpExt,
+    itemId: Long,
+    catalogItemId: Long,
+    store: Long
+  )(
+    using
+    ExecutionContext,
+    ClassicActorSystem
+  ): Unit = {
+    val firstItemRemovalResponse = Await.result(
+      httpClient.singleRequest(
+        Delete(
+          itemUri,
+          ItemRemovalEntity(itemId, catalogItemId, store)
+        )
+      ),
+      5.minutes
+    )
+    println(
+      responsePrefix +
+      Await.result(Unmarshal(firstItemRemovalResponse.entity).to[ResultResponseEntity[Unit]], 5.minutes).result.toString
+    )
+  }
+
   private def shutdown(
     httpClient: HttpExt,
     dittoClient: DittoClient,
@@ -313,34 +345,10 @@ object Demo extends SprayJsonSupport {
     println(">> [END] Customer de-registration")
     // Items deletion
     println(">> [BEGIN] First item removal")
-    val firstItemRemovalResponse = Await.result(
-      httpClient.singleRequest(
-        Delete(
-          itemUri,
-          ItemRemovalEntity(firstItemId, catalogItemId, store)
-        )
-      ),
-      5.minutes
-    )
-    println(
-      responsePrefix +
-      Await.result(Unmarshal(firstItemRemovalResponse.entity).to[ResultResponseEntity[Unit]], 5.minutes).result.toString
-    )
+    removeItem(httpClient, firstItemId, catalogItemId, store)
     println(">> [END] First item removal")
     println(">> [BEGIN] Second item removal started")
-    val secondItemRemovalResponse = Await.result(
-      httpClient.singleRequest(
-        Delete(
-          itemUri,
-          ItemRemovalEntity(secondItemId, catalogItemId, store)
-        )
-      ),
-      5.minutes
-    )
-    println(
-      responsePrefix +
-      Await.result(Unmarshal(secondItemRemovalResponse.entity).to[ResultResponseEntity[Unit]], 5.minutes).result.toString
-    )
+    removeItem(httpClient, secondItemId, catalogItemId, store)
     println(">> [END] Second item removal")
     // Catalog item removal
     println(">> [BEGIN] Catalog item removal started")
@@ -425,6 +433,30 @@ object Demo extends SprayJsonSupport {
     StdIn.readLine()
   }
 
+  private def moveCart(dittoClient: DittoClient, cartId: Long, store: Long): Unit =
+    dittoClient
+      .live
+      .forId(ThingId.of(s"io.github.pervasivecats:cart-$cartId-$store"))
+      .message[String]
+      .from
+      .subject("cartMoved")
+      .send()
+
+  private def liftCatalogItem(dittoClient: DittoClient, store: Long, shelving: (Long, Long, Long, Long)): Unit =
+    dittoClient
+      .live
+      .forId(ThingId.of(s"io.github.pervasivecats:shelving-$store-${shelving._1}-${shelving._2}"))
+      .message[String]
+      .from
+      .subject("catalogItemLiftingRegistered")
+      .payload(
+        JsObject(
+          "shelfId" -> shelving._3.toJson,
+          "itemsRowId" -> shelving._4.toJson
+        ).compactPrint
+      )
+      .send()
+
   @main
   def main(dittoUsername: String, dittoPassword: String): Unit = {
     val actorSystem: ActorSystem[Unit] = ActorSystem[Unit](Behaviors.empty[Unit], "root_actor")
@@ -448,13 +480,7 @@ object Demo extends SprayJsonSupport {
 
     // Cart moved - Wait for alarm raised
     println("> [BEGIN] Customer starts dragging cart, press enter after alarm is raised\n")
-    dittoClient
-      .live
-      .forId(ThingId.of(s"io.github.pervasivecats:cart-$cartId-$store"))
-      .message[String]
-      .from
-      .subject("cartMoved")
-      .send()
+    moveCart(dittoClient, cartId, store)
     StdIn.readLine()
     println("> [END] Customer stops dragging cart\n\n")
 
@@ -465,45 +491,29 @@ object Demo extends SprayJsonSupport {
 
     // Cart moved - No alarm is raised
     println("> [BEGIN] Customer dragging cart: press enter after noting that no alarm is raised\n")
-    dittoClient
-      .live
-      .forId(ThingId.of(s"io.github.pervasivecats:cart-$cartId-$store"))
-      .message[String]
-      .from
-      .subject("cartMoved")
-      .send()
+    moveCart(dittoClient, cartId, store)
     StdIn.readLine()
     println("> [END] Customer dragging cart\n\n")
 
     // Catalog items lifting
-    println("> [BEGIN] Customer lifting item: press enter after noting that two items has been lifted\n")
-    dittoClient
-      .live
-      .forId(ThingId.of(s"io.github.pervasivecats:shelving-$store-${shelving._1}-${shelving._2}"))
-      .message[String]
-      .from
-      .subject("catalogItemLiftingRegistered")
-      .payload(
-        JsObject(
-          "shelfId" -> shelving._3.toJson,
-          "itemsRowId" -> shelving._4.toJson
-        ).compactPrint
-      )
-      .send()
-    dittoClient
-      .live
-      .forId(ThingId.of(s"io.github.pervasivecats:shelving-$store-${shelving._1}-${shelving._2}"))
-      .message[String]
-      .from
-      .subject("catalogItemLiftingRegistered")
-      .payload(
-        JsObject(
-          "shelfId" -> shelving._3.toJson,
-          "itemsRowId" -> shelving._4.toJson
-        ).compactPrint
-      )
-      .send()
+    println("> [BEGIN] Customer lifting items: press enter after noting that two items has been lifted\n")
+    liftCatalogItem(dittoClient, store, shelving)
+    liftCatalogItem(dittoClient, store, shelving)
     StdIn.readLine()
+    val showCatalogItemResponse = Await.result(
+      httpClient.singleRequest(
+        Get(
+          catalogItemUri,
+          CatalogItemShowEntity(catalogItemId, store)
+        )
+      ),
+      5.minutes
+    )
+    println(
+      responsePrefix
+      + Await.result(Unmarshal(showCatalogItemResponse.entity).to[ResultResponseEntity[CatalogItem]], 5.minutes).result.toString
+      + "\n"
+    )
     println("> [END] Customer lifting items\n\n")
 
     // First item insertion into cart

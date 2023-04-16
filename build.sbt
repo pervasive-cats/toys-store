@@ -47,6 +47,7 @@ lazy val root = project
     assembly / assemblyJarName := "main.jar",
     assembly / mainClass := Some("io.github.pervasivecats.demo.main"),
     assembly / assemblyMergeStrategy := {
+      case PathList("io", "getquill", _*) => MergeStrategy.first
       case PathList("META-INF", "annotations", _*) => MergeStrategy.filterDistinctLines
       case PathList("META-INF", "NOTICE-THIRD-PARTY.md") => MergeStrategy.first
       case v => MergeStrategy.defaultMergeStrategy(v)

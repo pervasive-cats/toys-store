@@ -194,7 +194,7 @@ object DittoSetup {
     client
       .live
       .registerForMessage(
-        "demo_raiseAlarm",
+        "demo_cart_raiseAlarm",
         "raiseAlarm",
         classOf[String],
         (msg: RepliableMessage[String, String]) =>
@@ -249,14 +249,14 @@ object DittoSetup {
           .newBuilder
           .set(
             "thingId",
-            "io.github.pervasivecats:shelving-0-0-0"
+            "io.github.pervasivecats:shelving-999-0-0"
           )
-          .set("definition", "https://raw.githubusercontent.com/pervasive-cats/toys-store-stores/main/shelving.jsonld")
+          .set("definition", "https://raw.githubusercontent.com/pervasive-cats/toys-store-stores/beta/shelving.jsonld")
           .set(
             "attributes",
             JsonObject
               .newBuilder
-              .set("store", 0)
+              .set("store", 999)
               .set("shelvingGroup", 0)
               .set("id", 0)
               .build
@@ -270,9 +270,9 @@ object DittoSetup {
       .create(
         JsonObject
           .newBuilder
-          .set("thingId", "io.github.pervasivecats:antiTheftSystem-0")
-          .set("definition", "https://raw.githubusercontent.com/pervasive-cats/toys-store-stores/main/antiTheftSystem.jsonld")
-          .set("attributes", JsonObject.newBuilder.set("store", 0).build)
+          .set("thingId", "io.github.pervasivecats:antiTheftSystem-999")
+          .set("definition", "https://raw.githubusercontent.com/pervasive-cats/toys-store-stores/beta/antiTheftSystem.jsonld")
+          .set("attributes", JsonObject.newBuilder.set("store", 999).build)
           .build
       )
       .toCompletableFuture
@@ -282,9 +282,9 @@ object DittoSetup {
       .create(
         JsonObject
           .newBuilder
-          .set("thingId", "io.github.pervasivecats:dropSystem-0")
-          .set("definition", "https://raw.githubusercontent.com/pervasive-cats/toys-store-stores/main/dropSystem.jsonld")
-          .set("attributes", JsonObject.newBuilder.set("store", 0).build)
+          .set("thingId", "io.github.pervasivecats:dropSystem-999")
+          .set("definition", "https://raw.githubusercontent.com/pervasive-cats/toys-store-stores/beta/dropSystem.jsonld")
+          .set("attributes", JsonObject.newBuilder.set("store", 999).build)
           .build
       )
       .toCompletableFuture
@@ -293,7 +293,7 @@ object DittoSetup {
     client
       .live
       .registerForMessage[String, String](
-        "demo_raiseAlarm",
+        "demo_antiTheft_raiseAlarm",
         "raiseAlarm",
         classOf[String],
         (msg: RepliableMessage[String, String]) =>
@@ -314,7 +314,7 @@ object DittoSetup {
     client
       .live
       .registerForMessage[String, String](
-        "ditto_actor_showItemData",
+        "demo_showItemData",
         "showItemData",
         classOf[String],
         (msg: RepliableMessage[String, String]) =>
