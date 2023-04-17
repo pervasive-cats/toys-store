@@ -7,3 +7,6 @@
 [submodule "carts"]
 	path = carts
 	url = https://github.com/pervasive-cats/toys-store-carts.git
+[submodule "stores"]
+	path = stores
+	url = https://github.com/pervasive-cats/toys-store-stores.git
