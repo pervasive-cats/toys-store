@@ -1,3 +1,16 @@
+# [1.1.0](https://github.com/pervasive-cats/toys-store/compare/v1.0.1...v1.1.0) (2023-04-18)
+
+
+### Bug Fixes
+
+* add print of catalog item state after lifting, minor fixes for ditto thing ids and handlers ([9996c81](https://github.com/pervasive-cats/toys-store/commit/9996c815b270a17a3fb237740fc5f0a27f9144ea))
+
+
+### Features
+
+* add configuration for stores microservice in deployment ([6e3a2f0](https://github.com/pervasive-cats/toys-store/commit/6e3a2f0d0e3d982a989855cef1387d4523420fbd))
+* add missing actions in demo ([7b3adfc](https://github.com/pervasive-cats/toys-store/commit/7b3adfcd5c7040e2564b8194138790898141f90a))
+
 ## [1.0.1](https://github.com/pervasive-cats/toys-store/compare/v1.0.0...v1.0.1) (2023-04-09)
 
 

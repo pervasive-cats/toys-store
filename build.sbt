@@ -35,7 +35,7 @@ lazy val root = project
       quill
     ),
     wartremoverErrors ++= Warts.allBut(Wart.ImplicitParameter),
-    version := "1.0.1",
+    version := "1.1.0",
     headerLicense := Some(
       HeaderLicense.Custom(
         """|Copyright © 2022-2023 by Pervasive Cats S.r.l.s.
