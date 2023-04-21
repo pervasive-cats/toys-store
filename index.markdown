@@ -47,7 +47,7 @@ stesso.
     2. [Architettura a microservizi](/toys-store/detailed_design#architettura-a-microservizi)
     3. [Digital twin](/toys-store/detailed_design#digital-twin)
     4. [Attori](/toys-store/detailed_design#attori)
-4. [Devops](/toys-store/devops)
+4. [DevOps](/toys-store/devops)
     1. [Workflow](/toys-store/devops#workflow)
     2. [Organizzazione delle repository](/toys-store/devops#organizzazione-delle-repository)
     3. [Continuous Integration](/toys-store/devops#continuous-integration)
