@@ -138,7 +138,7 @@ Nel diagramma successivo è illustrata la descrizione del bounded context "carre
 
 ![Diagramma che descrive il bounded context "carrelli"](/toys-store/assets/images/Carts_bc.jpg)
 
-Questo bounded context è un "engagement generator" perché non è ciò che porta al guadagno del business, però i clienti
+Questo bounded context è un "engagement generator", perché non è ciò che porta al guadagno del business però i clienti
 vi interagiscono, ed è "custom built" perché sarà realizzato internamente. Il ruolo del suo dominio è
 quello di "service provider" perché non è un semplice "information holder": con le informazioni che trattiene offre anche un
 servizio, ovvero quello di gestire i carrelli e fare in modo che rispondano correttamente agli input che gli utenti danno loro.

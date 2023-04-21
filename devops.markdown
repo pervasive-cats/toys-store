@@ -58,7 +58,7 @@ quel momento in poi, sono stati permessi solo rilasci stabili in accordo con la 
 Per la gestione del progetto, è stata creata una "organizzazione" su GitHub accessibile a tutti gli sviluppatori e al software
 architect che contiene tutte le _repository_, denominata "Pervasive Cats". In questo modo è possibile gestire in maniera più
 semplice, ovvero centralizzata, ognuna di esse, sia per quanto riguarda gli aspetti di sicurezza che di organizzazione del lavoro.
-In seguito è stato infatti creato un "progetto" che potesse tracciare tutte le _issue_ e le _pull request_ similmente ad una kanban board e che
+In seguito è stato creato un "progetto" che potesse tracciare tutte le _issue_ e le _pull request_, similmente ad una "kanban board", che
 permettesse di vedere a colpo d'occhio cosa è necessario fare e dove. Per forzare la separazione dei bounded context così come il
 Domain Driven Design impone, è stata creata una _repository_ per ciascun microservizio, più una generale, capace di raccogliere
 tutte le altre come "git submodules". È in quest'ultima che è contenuto il codice per effettuare il rilascio del sistema nella

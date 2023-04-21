@@ -9,7 +9,8 @@ permalink: /implementation
 </div>
 <br/>
 
-Per l'implementazione della soluzione proposta sono state utilizzate svariate tecnologie nelle diverse fasi del progetto. Si è fatto uso di due middleware: "Eclipse Ditto", per la realizzazione dei digital twin, e "RabbitMQ", per la comunicazione
+Per l'implementazione della soluzione proposta sono state utilizzate svariate tecnologie nelle diverse fasi del progetto. Si è
+fatto uso di due middleware: "Eclipse Ditto", per la realizzazione dei digital twin, e "RabbitMQ", per la comunicazione
 asincrona e message-oriented dei microservizi. Per permettere comunicazione asincrona è stata utilizzata anche la tecnologia delle
 websocket, che permettono la creazione di canali full-duplex tra client e server. Inoltre, sia durante il testing che il
 deployment, è stata utilizzata la tecnologia per la creazione di container "Docker", in modo da avere degli ambienti di esecuzione
@@ -33,6 +34,11 @@ _callback_ nel momento nel quale tali messaggi sono stati ricevuti. Questo mecca
 controparti perfettamente in grado di comunicare tra di loro ed effettuare il cosiddetto "shadowing" e fare in modo che tutta la
 computazione venga eseguita dalla componente virtuale.
 
+Ditto supporta anche un meccanismo di gestione delle policy per regolare chi ha accesso ai diversi digital twin e per fare cosa,
+ma in questo progetto non si è voluto approfondire questo aspetto. Dopotutto, si presume che il sistema venga rilasciato in un
+ambiente completamente controllato dall'azienda che lo ha commissionato, per cui i rischi legati alla sicurezza delle _thing_
+sono minimi.
+
 Un'altra caratteristica di interesse di questo middleware è il supporto allo standard "Web of Things" così come presentato dal
 "World Wide Web Consortium". Questo standard ha lo scopo di presentare un modello standardizzato per la modellazione delle istanze
 e delle classi di _thing_ sfruttando concetti come quelli di "risorsa", "link" e "form" che sono tipici del web. Questo sia per
@@ -45,60 +51,60 @@ costruzione di questi ultimi mediante Eclipse Ditto. Il loro supporto è limitat
 attributi. Seguendo la documentazione ufficiale, le "action affordances" possono essere modellate tramite i messaggi inviati al
 device, mentre le "event affordances" tramite i messaggi inviati dal device.
 
-Ditto supporta anche un meccanismo di gestione delle policy per regolare chi ha accesso ai diversi digital twin e per fare cosa,
-ma in questo progetto non si è voluto approfondire questo aspetto. Dopotutto, si presume che il sistema venga rilasciato in un
-ambiente completamente controllato dall'azienda che lo ha commissionato, per cui i rischi legati alla sicurezza delle _thing_
-sono minimi.
+Qui di seguito dei frammenti del "Thing Model" dei sistemi antitaccheggio, definito in formato "JSON Linked Data" come da specifica
+"Web-of-Things".
 
-Qui di seguito degli snippet del "Thing Model" della classe di _digital twin_ "anti-theft system", definita in formato .jsondl:
+```{json}
+"@context": "https://www.w3.org/2019/wot/td/v1",
+"title": "AntiTheftSystem",
+"@type": "tm:ThingModel",
+"base": "http://localhost:8080/api/2/things/",
+"description": "The anti-theft system in its store.",
+"securityDefinitions": {
+    "nosec_sc": {
+        "scheme": "nosec"
+    }
+},
+"security": "nosec_sc",
+"uriVariables": {
+    "storeId": {
+      "title": "storeId",
+      "description": "The id of the store the anti-theft system is in.",
+      "type": "integer",
+      "minimum": 0
+    }
+},
+"properties": {
+    "storeId": {
+        "title": "storeId",
+        "observable": false,
+        "readOnly": true,
+        "description": "The id of store the anti-theft system is in.",
+        "type": "integer",
+        "minimum": 0,
+        "forms": [
+            {
+                "op": [
+                    "readproperty"
+                ],
+                "href": "io.github.pervasivecats:antiTheftSystem-{storeId}/attributes/storeId"
+            }
+        ]
+    }
+},
 ```
-{
-    "@context": "https://www.w3.org/2019/wot/td/v1",
-    "title": "AntiTheftSystem",
-    "@type": "tm:ThingModel",
-    "base": "http://localhost:8080/api/2/things/",
-    "description": "The anti-theft system in its store.",
-    "securityDefinitions": {
-        "nosec_sc": {
-            "scheme": "nosec"
-        }
-    },
-    "security": "nosec_sc",
-    "uriVariables": {
-        "storeId": {
-          "title": "storeId",
-          "description": "The id of the store the anti-theft system is in.",
-          "type": "integer",
-          "minimum": 0
-        }
-    },
-    "properties": {
-        "storeId": {
-            "title": "storeId",
-            "observable": false,
-            "readOnly": true,
-            "description": "The id of store the anti-theft system is in.",
-            "type": "integer",
-            "minimum": 0,
-            "forms": [
-                {
-                    "op": [
-                        "readproperty"
-                    ],
-                    "href": "io.github.pervasivecats:antiTheftSystem-{storeId}/attributes/storeId"
-                }
-            ]
-        }
-    },
-    ...
-```
-In "uriVariables" vengono definite le proprietà della _thing_ che appaiono negli URI presenti nel _Thing Model_, ovvero le proprietà che comporranno l'identificatore univoco di ogni _Thing Description_ che verrà generata a partire dal _Thing Model_.
-Invece "properties" definisce la modellazione dei dati che costituiscono le proprietà della _thing_. 
 
-In "forms" viene descritto l'_endpoint_ HTTP della proprietà, marcandola come "readproperty" e specificando l'URI con cui è possibile accedervi.
+In "uriVariables" vengono definite le variabili che appaiono negli URI presenti nel "Thing Model", come ad esempio nell'URI che
+identifica univocamente la _thing_ come risorsa e che perciò rappresenta l'identificatore univoco di ogni "Thing Description".
+Il formato di tutti gli URI è stato scelto perché combaciasse con la nozione di "thing id" e di "namespace" scelte da Ditto, in
+modo tale da essere quanto più possibile aderenti alle specifiche del middleware scelto. Tutte le variabili sono anche proprietà
+della _thing_ e per questo motivo sono state replicate tra le "properties affordances" del "Thing Model". Il gruppo delle
+"properties" definisce quindi le informazioni che costituiscono le proprietà della _thing_. Sono state modellate come non osservabili,
+in quanto si è deciso di voler utilizzare sempre delle "event affordances" per modellare delle sorgenti di eventi, e immutabili,
+perché per modificare le proprietà è necessario passare attraverso le "action affordances" presenti nella "Thing Description".
+Nel blocco "forms" di ogni proprietà viene descritto l'_endpoint_ grazie al quale potervi accedere tramite un URI.
 
-```
-... ,
+```{json}
 "actions": {
     "raiseAlarm": {
         "title": "raiseAlarm",
@@ -118,9 +124,72 @@ In "forms" viene descritto l'_endpoint_ HTTP della proprietà, marcandola come "
         "safe": false,
         "idempotent": false,
         "input": {},
-        "output": { ... }
+        "output": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "required": [
+                        "error",
+                        "result"
+                    ],
+                    "properties": {
+                        "result": {
+                            "type": "integer",
+                            "const": 1
+                        },
+                        "error": {
+                            "type": "null"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "error",
+                        "result"
+                    ],
+                    "properties": {
+                        "result": {
+                            "type": "null"
+                        },
+                        "error": {
+                            "type": "object",
+                            "required": [
+                                "type",
+                                "message"
+                            ],
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "AlarmAlreadyRaised",
+                                        "AlarmNotRaised"
+                                    ]
+                                },
+                                "message": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
     }
 },
+```
+
+Le azioni che è possibile compiere su di una _thing_ vengono definite tramite rispettivamente il blocco "actions". Per scelta,
+tutte le "action affordances" non sono "safe", perché vanno in una certa misura a variare lo stato interno della _thing_, e non
+sono "idempotent", perché effettuare più volte la stessa azione con lo stesso input può portare a risultati differenti,
+dipendentemente dallo stato interno della _thing_. Gli input che sono forniti all'azione e i suoi output sono sempre in formato
+JSON, a meno che l'azione non debba ricevere nessun input, in tal caso il formato non viene definito. L'output segue sempre il
+formato dei messaggi usati in ogni punto del sistema, in modo tale che possa sempre essere chiaro al mittente se l'operazione è
+andata a buon fine, e il risultato è stato generato, o se si è verificato un errore. In tal caso viene specificato tipo dell'errore
+e una spiegazione in linguaggio naturale sull'errore. Nel blocco "forms" di ogni azione viene descritto l'_endpoint_ grazie al
+quale poterla invocare tramite un URI, oltre ai già citati formati per l'input e l'output della stessa.
+
+```{json}
 "events": {
     "itemDetected": {
         "title": "itemDetected",
@@ -154,7 +223,12 @@ In "forms" viene descritto l'_endpoint_ HTTP della proprietà, marcandola come "
     }
 }
 ```
-Azioni ed eventi della _thing_ vengono definiti sempre tramite il campo "forms", dove in questo caso vengono definiti anche gli eventuali input e output dei messaggi.
+
+Gli eventi che la _thing_ è capace di generare vengono definiti tramite il blocco "events". Per ogni evento è specificato il
+formato dei dati dello stesso, che per scelta è sempre quello JSON. In più, vengono specificate le proprietà che costituiscono
+l'evento e che ci si deve aspettare di ricevere ogniqualvolta si viene notificati di quello specifico evento. Nel blocco "forms"
+di ogni evento viene descritto l'_endpoint_ grazie al quale potersi registrare per la ricezione invocare tramite un URI, oltre al
+già citato formato dello stesso.
 
 ## RabbitMQ
 

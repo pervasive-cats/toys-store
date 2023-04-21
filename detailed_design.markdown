@@ -9,8 +9,9 @@ permalink: /detailed_design
 </div>
 <br/>
 
-Una volta realizzati i bounded context canvas si tratta di completarli con la _context map_ che illustra le relazioni fra di essi. Per questo motivo, si è entrati maggiormente nel dettaglio di ciascun bounded context andando a definire l'architettura
-interna di ciascuno di essi: quali sono i suoi componenti, di che tipo sono le sue relazioni con gli altri e come queste vengono
+Una volta realizzati i bounded context canvas si tratta di completarli con la _context map_ che illustra le relazioni fra i bounded context.
+Per questo motivo, si è entrati maggiormente nel dettaglio di ciascuno di essi andando a definire la sua architettura
+interna: quali sono i suoi componenti, di che tipo sono le sue relazioni con gli altri e come queste vengono
 realizzate. Lo strumento "context mapper" si è perciò rivelato doppiamente utile: oltre che definire la "context map" dura e pura,
 ha permesso di specificare quali entities, quali value objects, quali services compongono la sua implementazione e com'è fatta
 l'implementazione della loro interfaccia. In questo modo, è stato possibile tradurre direttamente i file di modellazione
@@ -154,7 +155,8 @@ le transizioni della _state machine_ corrispondente.
 ## Architettura a microservizi
 
 L'architettura adottata per il sistema è quella a microservizi. Ogni bounded context è stato mappato in un microservizio, il che
-significa che il sistema si compone di sei microservizi, più ulteriori sei per il _data layer_ dei primi, a cui si aggiungono quello per il message broker e quello per il gestore dei Digital Twin, che sarà approfondito in seguito. In totale, il numero di
+significa che il sistema si compone di sei microservizi, più ulteriori sei per il _data layer_ dei primi, a cui si aggiungono
+quello per il message broker e quello per il gestore dei Digital Twin, che sarà approfondito in seguito. In totale, il numero di
 microservizi è pari a 14. La scelta è ricaduta su questo pattern architetturale perché permette di mettere in atto correttamente le
 proprietà che ci attenderemmo dall'implementazione di un bounded context, ovvero l'isolamento di questa porzione di dominio dalle
 altre, in modo tale che il suo modello sia totalmente auto-contenuto e disaccoppiato da quello degli altri bounded context. Con i
@@ -165,7 +167,8 @@ opportuno, anche sfruttando _stack_ tecnologici completamente diversi, anche se 
 semplicità di sviluppo e rilascio. Inoltre, essendo di piccole dimensioni e indipendenti tra loro, è possibile automatizzare il
 loro processo di _deployment_, che bene si sposa con la metodologia "devops" che si è adottata in questo progetto.
 
-L'adozione dell'architettura a microservizi implica naturalmente la realizzazione di un sistema distribuito, che ben si presta al contesto in cui si colloca il progetto per le proprietà di scalabilità e interoperabilità.
+L'adozione dell'architettura a microservizi implica naturalmente la realizzazione di un sistema distribuito, che ben si presta al
+contesto in cui si colloca il progetto per le proprietà di scalabilità e interoperabilità.
 Un sistema distribuito presenta però delle complicazioni: nessuna componente può conoscere lo stato globale del sistema,
 ma può averne solo una visione parziale fornitagli dagli altri componenti e non è possibile sincronizzare in modo assoluto i
 componenti tra di essi. Per questo motivo, non sono permesse transazioni per operazioni che coinvolgono più microservizi, ma ci si
@@ -218,27 +221,58 @@ per fare in modo che tutti gli eventi nel sistema vengano gestiti da parte dello
 
 ## Digital twin
 
-L'aspetto innovativo del progetto realizzato è la pervasiva digitalizzazione delle componenti di un negozio che sono coinvolte durante un processo d'acquisto: gli oggetti da acquistare e il negozio stesso. Dotando tali componenti di identificatori, sensori e attuatori un cliente può interagire in autonomia con il "negozio smart" e lasciare che la logica di acquisto sia gestita dal sistema in completa autonomia.
+L'aspetto innovativo del progetto realizzato è la pervasiva digitalizzazione delle componenti di un negozio che sono coinvolte
+durante il processo d'acquisto: gli oggetti da acquistare e il negozio stesso. Dotando tali componenti di identificatori, sensori
+e attuatori un cliente può interagire in autonomia con il "negozio smart" e lasciare che la logica di acquisto sia gestita dal
+sistema in completa autonomia.
 
-Per gestire ed incorporare nel sistema i dati generati dai _device_ presenti nei negozi è risultato naturale adottare la visione dei _Digital Twin_: ogni dispositivo fisicamente presente nel negozio è rappresentato nel sistema con la sua esatta controparte digitale, creando così un mondo virtuale parallelo a quello reale. Il sistema ha accesso alla visione astratta dei negozi fisici e può interagire con essi attraverso la loro controparte digitale, che altro non è che un'interfaccia che comporta separazione dall'implementazione fisica dei dispositivi smart. I device fisici sono in continua comunicazione con la loro controparte digitale, fornendo così una visione _real time_ del sistema. 
+Per gestire ed incorporare nel sistema i dati generati dai _device_ presenti nei negozi è risultato naturale adottare la visione
+dei _Digital Twin_: ogni dispositivo fisicamente presente nel negozio è rappresentato nel sistema con la sua esatta controparte
+digitale, creando così un mondo virtuale parallelo a quello reale. Il sistema ha accesso alla visione astratta dei negozi fisici e
+può interagire con essi attraverso la loro controparte digitale, che altro non è che un'interfaccia che comporta separazione
+dall'implementazione fisica dei dispositivi smart. I _device_ fisici sono in continua comunicazione con la loro controparte
+digitale, fornendo così una visione _real time_ del sistema.
 
-La visione _Digital Twin_ apporta un grande valore di business all'attività: consente agli amministratori della catena di negozi di avere una visione d'insieme estremamente accurata e dettagliata dell'attività grazie alle informazioni raccolte accessibili da una dashboard, così come gli impiegati dei singoli negozi possono visualizzare lo stato corrente del proprio negozio e rimanere informati su eventi rilevanti. I clienti possono inoltre visualizzare informazioni sui prodotti e sul processo di acquisto in atto tramite l'applicazione su smartphone; si consente quindi anche ai clienti di interagire con il "negozio virtuale", ottenendo una sorta di _augmented reality_.
+La visione _Digital Twin_ apporta un grande valore di business all'attività: consente agli amministratori della catena di negozi
+di avere una visione d'insieme estremamente accurata e dettagliata dell'attività grazie alle informazioni raccolte accessibili da
+una dashboard, così come gli impiegati dei singoli negozi possono visualizzare lo stato corrente del proprio negozio e rimanere
+informati su eventi rilevanti. I clienti possono inoltre visualizzare informazioni sui prodotti e sul processo di acquisto in atto
+tramite l'applicazione su smartphone; si consente quindi anche ai clienti di interagire con il "negozio virtuale", ottenendo una
+sorta di _augmented reality_.
 
-Per quanto riguarda l'integrazione dei digital twin nel progetto è stato adottato lo standard del _Web of Things_ in accordanza con il W3C: ogni smart thing è rappresentata da una propria interfaccia, la _Thing Description_, che la espone al resto del programma in modo agnostico dall'implementazione vera e propria. Poichè lo standard WoT si basa sui principali protocolli internet, e modella le smart things e le loro _interaction affordances_ come risorse web accessibili tramite URI, l'integrazione dei digital twin nel contesto del progetto come sistema distribuito REST è risultata _seamless_, garantendo i principi di modularità, scalabilità e interoperabilità richiesti.
+Per quanto riguarda l'integrazione dei digital twin nel progetto è stato adottato lo standard del _Web of Things_ in accordo con
+lo standard promosso dal "World Wide Web Consortium": ogni _smart thing_ è rappresentata da una propria interfaccia, la
+"Thing Description", che la espone al resto del programma in modo agnostico dall'implementazione vera e propria. Poiché lo
+standard WoT si basa sui principali protocolli internet, e modella le smart things e le loro _interaction affordances_ come
+risorse web accessibili tramite URI, l'integrazione dei digital twin nel contesto del progetto come sistema distribuito RESTful è
+risultata _seamless_, garantendo i principi di modularità, scalabilità e interoperabilità richiesti. L'utilizzo dello standard WoT
+inoltre fornisce dei "protocol binding" verso i protocolli più utilizzati per quanto riguarda il web, come HTTP, aspetto che ben
+si sposa con la volontà di realizzare una architettura RESTful.
 
-I digital twin presenti nel sistema sono i seguenti:
-- __cart__: ogni carrello è modellato individualmente e ha un identificativo univoco all'interno del negozio;
-- __drop system__: un sistema di restituzione di prodotti per negozio; 
-- __anti-theft system__: un sistema di allarme per negozio, rileva la presenza di un prodotto non associato ad un processo d'acquisto fuori dal negozio;
-- __shelving__: ogni scaffalatura è modellata individualmente. Una scaffalatura è identificata dal negozio, gondola in cui si trova e identificatore univoco all'interno della gondola. Ogni scaffalatura mantiene le informazioni degli scaffali che possiede e, per ogni scaffale, la fila di prodotti, entrambi aventi un identificatore univoco al rispettivo gruppo.
+Le classi di digital twin presenti nel sistema sono i seguenti:
+
+- "carrello": ogni carrello ha sensori capaci di rilevare quando viene spostato all'interno del negozio o un prodotto viene
+inserito al suo interno. In più, possiede attuatori capaci di permettere al carrello di muoversi o di rimanere bloccato e di
+associare ad esso il cliente che lo sta utilizzando;
+- "sistema di restituzione": il sistema che permette di restituire i prodotti all'interno del negozio. Per la sua funzione, questo
+ha sensori capaci di rilevare quando un prodotto è stato inserito al suo interno e di rilevare la conferma del cliente nel
+restituire il prodotto precedentemente inserito. Gli attuatori presenti nel sistema permettono al cliente di scegliere se vuole
+che il prodotto inserito sia restituito o meno;
+- "sistema antitaccheggio": il sistema di allarme antifurto nel negozio, i cui sensori sono capaci di rilevare la presenza nelle
+vicinanze di un prodotto non presente nel carrello di un cliente che sta uscendo dal negozio. L'attuatore nel sistema è quello
+capace di attivare l'allarme proprio del sistema stesso;
+- "scaffalatura": ogni scaffalatura è modellata in modo tale da mantenere le informazioni sugli scaffali che possiede e, per ogni
+scaffale, la fila di prodotti, entrambi aventi un identificatore che è univoco per il rispettivo gruppo. I sensori a bordo della
+scaffalatura permettono di osservare quando un prodotto viene sollevato da una fila degli stessi.
+
+Per ognuna di esse, in accordo con lo standard WoT, è stato realizzato un "Thing Model" che descriva le proprietà sopracitate, il
+quale di volta in volta sarà utilizzato per creare le istanze delle interfacce che sono le "Thing Description".
 
 ## Attori
 
-Si è scelto di fare uso del modello ad attori con lo scopo di realizzare una architettura _event driven_, in quanto il progetto è incentrato sull'esperienza di acquisto dei potenziali clienti. Ogni azione eseguita dal programma è in reazione alle interazioni umane con il sistema, ovvero eventi iniziati da clienti o impiegati. Inoltre il modello ad attori ha caratteristiche che ben si prestano al progetto: gli attori sono _self-contained_, operano a scambio di messaggi, sono dunque facilmente integrabili in un'architettura distribuita e scalabile.
-
 Un attore è un'entità reattiva, che esegue il proprio comportamento in corrispondenza della ricezione dei messaggi che riceve
 dagli altri attori che fanno parte del sistema. È capace di modificare il proprio stato interno e il proprio comportamento a
-seconda del tipo di messaggi inviatogli. Questo significa che ogni attore è dotato di una "message box" dove possono essere
+seconda del tipo di messaggi che gli sono inviati. Questo significa che ogni attore è dotato di una "message box" dove possono essere
 lasciati i messaggi che riceve. Non è necessario sapere dove l'attore si trova, ma solamente qual è il suo identificatore, per
 inviargli un messaggio. Le primitive di base che un attore ha a disposizione sono dunque: "send" per inviare un messaggio ad un
 altro attore, "become" per modificare il proprio comportamento e "spawn" per creare un attore figlio. Ogni attore incapsula un
@@ -247,10 +281,19 @@ proprio flusso di controllo, indipendente da quello degli altri, ed esegue il pr
 conseguente esecuzione concorrente del proprio stesso comportamento. Questo implica che un attore non può effettuare chiamate
 bloccanti come parte del suo comportamento.
 
-In ogni microservizio sono presenti i seguenti tipi di attori:
-- __message broker actor__: gestisce le interazioni via scambio di messaggi con gli altri microservizi e con l'applicazione e dashboard dell'azienda;
-- __server actor__: gestisce le comunicazioni HTTP con applicazione e dashboard;
-- __digital twin actor__: ogni attore gestisce le interazioni con un tipo di _digital twin_.
+Si è scelto di fare uso del modello ad attori con lo scopo di realizzare una architettura reattiva, in quanto il progetto è
+incentrato sull'esperienza di acquisto dei potenziali clienti. Ogni azione eseguita dal programma è in reazione alle interazioni
+umane con il sistema, ovvero eventi iniziati da clienti o impiegati. Inoltre il modello ad attori ha caratteristiche che ben si
+prestano al progetto: gli attori sono _self-contained_, operano a scambio di messaggi, sono dunque facilmente integrabili in
+un'architettura distribuita e scalabile.
+
+In ogni microservizio possono essere presenti i seguenti tipi di attori, come già detto in precedenza:
+
+- "message broker actor": gestisce le interazioni via scambio di messaggi tra il microservizio e gli altri microservizi e tra il
+microservizio e l'applicazione e la dashboard;
+- "server actor": gestisce le comunicazioni via HTTP tra il microservizio e l'applicazione e la dashboard;
+- "digital twin actor": gestisce le interazioni con i _device_ di cui il microservizio è responsabile, rappresentando di fatto il
+digital twin di questi, appunto.
 
 <br/>
 <div>

@@ -561,17 +561,24 @@ In aggiunta ai requisiti funzionali elencati precedentemente, così come estrapo
 sono stati individuati i seguenti requisiti non funzionali:
 
 * Il sistema deve essere sufficientemente modulare in modo tale da essere possibile riusare i suoi componenti in
-contesti diversi senza problemi;
+contesti diversi senza vincoli;
   * Non ci devono essere dipendenze tra le classi dei componenti, ma solo verso interfacce liberamente re-implementabili;
   * Non ci devono essere dipendenze da interfacce di livello di dominio verso interfacce di livello applicativo o di
     livello dati, possono solo essere eventualmente presenti tra le loro implementazioni;
   * Non ci devono essere dipendenze da entità di livello dati verso entità di livello applicativo;
-  * I componenti del sistema devono essere quanto meno possibile dipendenti tra di loro, devono poter essere implementati
+  * I moduli del sistema devono essere quanto meno possibile dipendenti tra di loro, devono poter essere implementati
     indipendentemente, rilasciati indipendentemente, devono fallire indipendentemente tra loro;
-* Il sistema non deve mai interrompersi qualora si verifichi un errore, deve invece restituire un messaggio di errore;
-* Il sistema deve essere scalabile;
+  * Nessuna assunzione può essere fatta nei confronti dell'implementazione dei _device_ fisici, i quali possono essere realizzati
+    in modo indipendente dal sistema in oggetto, purché rispettino le interfacce definite;
+  * Nessuna assunzione può essere fatta sui dispositivi su cui il sistema verrà rilasciato, eccetto quelle inerenti al supporto
+    della tecnologia di _deployment_ scelta.
+* Il sistema non deve mai interrompersi qualora si verifichi un errore, ma proseguire senza generare fallimenti;
+* Il sistema deve essere sufficientemente scalabile, cioè permettere di supportare più negozi nel momento nel quale si decida di
+  volerne aggiungere altri al sistema;
 * Le _user interfaces_ del sistema devono essere fluide, cioè non presentare _stuttering_ o _freezing_;
-* Il sistema deve poter gestire un carico di almeno una cinquantina di utenti senza subire fallimenti dovuti a sovraccarico;
+* Il sistema deve essere sufficientemente elastico;
+  * Deve poter gestire circa 60 utenti connessi in negozio contemporaneamente senza subire fallimenti dovuti a sovraccarico;
+  * Deve poter gestire circa 120 _device_ connessi in negozio contemporaneamente senza subire fallimenti dovuti a sovraccarico.
 * La copertura degli _statements_ e dei _branches_ nella valutazione della _coverage_ deve essere pari o superiore all'80%;
 * La qualità del codice deve essere considerata adeguata secondo lo strumento "Sonarcloud".
 
@@ -585,12 +592,12 @@ sono stati individuati i seguenti requisiti implementativi:
 * Deve essere sfruttato lo strumento di _build automation_ "scala build tool" versione 1.8.0 o successive per automatizzare la
   compilazione, il _testing_ e il _deployment_ degli artefatti rilasciati;
 * Devono essere applicati i pattern tattici del _Domain Driven Design_ durante la progettazione e l'implementazione del sistema;
-* Si deve realizzare un sistema distribuito e _event-driven_;
-* La repository deve essere gestita attraverso il D.V.C.S. "git" e mantenuta sul servizio di _hosting_ "GitHub";
+* Si deve realizzare un sistema distribuito e reattivo;
+* Il codice deve essere gestito attraverso il D.V.C.S. "git" e mantenuto sul servizio di _hosting_ "GitHub";
 * Deve essere sfruttata la tecnologia offerta da "GitHub" per effettuare _continuous integration_ e _continuous deployment_,
   ovvero "GitHub Actions";
 * Il _versioning_ degli artefatti deve avvenire in maniera automatica attraverso lo strumento "semantic release", ciò implica il
-  fatto che i numeri di versione vengono scelti secondo la strategia "semantic versioning".
+  fatto che i numeri di versione vengono scelti secondo la strategia di "semantic versioning".
 
 <br/>
 <div>

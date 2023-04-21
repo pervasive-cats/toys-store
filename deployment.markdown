@@ -49,7 +49,7 @@ Inoltre, mentre il sistema veniva realizzato, è stato richiesto dal cliente di 
 funzionamento del sistema. Queste demo sono pensate per essere messe in esecuzione su di una macchina di test, non di produzione,
 perciò che non necessariamente, anzi, sicuramente non possiede le prestazioni necessarie per mettere in piedi il sistema.
 Certamente la macchina dovrà essere in grado di far funzionare una versione ridotta dei servizi utilizzati. Per questo motivo si
-è deciso di creare una versione semplificata dello _script_ Bash per la demo, non troppo diverso da quello originale.
+è deciso di creare una versione semplificata dello _script_ Bash per la demo, non troppo diversa da quello originale.
 
 Lo _script_ per la demo prende come input da riga di comando gli stessi input dello _script_ originale e lancia i servizi di Eclipse
 Ditto in maniera identica al precedente. Dopodiché, però, lancia direttamente il container del server RabbitMQ, aspettando che nel
