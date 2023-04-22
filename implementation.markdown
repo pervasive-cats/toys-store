@@ -54,7 +54,7 @@ device, mentre le "event affordances" tramite i messaggi inviati dal device.
 Qui di seguito dei frammenti del "Thing Model" dei sistemi antitaccheggio, definito in formato "JSON Linked Data" come da specifica
 "Web-of-Things".
 
-```{json}
+```json
 "@context": "https://www.w3.org/2019/wot/td/v1",
 "title": "AntiTheftSystem",
 "@type": "tm:ThingModel",
@@ -104,7 +104,7 @@ in quanto si è deciso di voler utilizzare sempre delle "event affordances" per 
 perché per modificare le proprietà è necessario passare attraverso le "action affordances" presenti nella "Thing Description".
 Nel blocco "forms" di ogni proprietà viene descritto l'_endpoint_ grazie al quale potervi accedere tramite un URI.
 
-```{json}
+```json
 "actions": {
     "raiseAlarm": {
         "title": "raiseAlarm",
@@ -179,17 +179,17 @@ Nel blocco "forms" di ogni proprietà viene descritto l'_endpoint_ grazie al qua
 },
 ```
 
-Le azioni che è possibile compiere su di una _thing_ vengono definite tramite rispettivamente il blocco "actions". Per scelta,
+Le azioni che è possibile compiere su di una _thing_ vengono definite tramite il blocco "actions". Per scelta,
 tutte le "action affordances" non sono "safe", perché vanno in una certa misura a variare lo stato interno della _thing_, e non
 sono "idempotent", perché effettuare più volte la stessa azione con lo stesso input può portare a risultati differenti,
 dipendentemente dallo stato interno della _thing_. Gli input che sono forniti all'azione e i suoi output sono sempre in formato
 JSON, a meno che l'azione non debba ricevere nessun input, in tal caso il formato non viene definito. L'output segue sempre il
 formato dei messaggi usati in ogni punto del sistema, in modo tale che possa sempre essere chiaro al mittente se l'operazione è
-andata a buon fine, e il risultato è stato generato, o se si è verificato un errore. In tal caso viene specificato tipo dell'errore
+andata a buon fine, e il risultato è stato generato, o se si è verificato un errore. In tal caso viene specificato il tipo dell'errore
 e una spiegazione in linguaggio naturale sull'errore. Nel blocco "forms" di ogni azione viene descritto l'_endpoint_ grazie al
 quale poterla invocare tramite un URI, oltre ai già citati formati per l'input e l'output della stessa.
 
-```{json}
+```json
 "events": {
     "itemDetected": {
         "title": "itemDetected",
