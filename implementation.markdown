@@ -55,43 +55,46 @@ Qui di seguito dei frammenti del "Thing Model" dei sistemi antitaccheggio, defin
 "Web-of-Things".
 
 ```json
-"@context": "https://www.w3.org/2019/wot/td/v1",
-"title": "AntiTheftSystem",
-"@type": "tm:ThingModel",
-"base": "http://localhost:8080/api/2/things/",
-"description": "The anti-theft system in its store.",
-"securityDefinitions": {
-    "nosec_sc": {
-        "scheme": "nosec"
-    }
-},
-"security": "nosec_sc",
-"uriVariables": {
-    "storeId": {
-      "title": "storeId",
-      "description": "The id of the store the anti-theft system is in.",
-      "type": "integer",
-      "minimum": 0
-    }
-},
-"properties": {
-    "storeId": {
-        "title": "storeId",
-        "observable": false,
-        "readOnly": true,
-        "description": "The id of store the anti-theft system is in.",
-        "type": "integer",
-        "minimum": 0,
-        "forms": [
-            {
-                "op": [
-                    "readproperty"
-                ],
-                "href": "io.github.pervasivecats:antiTheftSystem-{storeId}/attributes/storeId"
-            }
-        ]
-    }
-},
+{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "title": "AntiTheftSystem",
+    "@type": "tm:ThingModel",
+    "base": "http://localhost:8080/api/2/things/",
+    "description": "The anti-theft system in its store.",
+    "securityDefinitions": {
+        "nosec_sc": {
+            "scheme": "nosec"
+        }
+    },
+    "security": "nosec_sc",
+    "uriVariables": {
+        "storeId": {
+          "title": "storeId",
+          "description": "The id of the store the anti-theft system is in.",
+          "type": "integer",
+          "minimum": 0
+        }
+    },
+    "properties": {
+        "storeId": {
+            "title": "storeId",
+            "observable": false,
+            "readOnly": true,
+            "description": "The id of store the anti-theft system is in.",
+            "type": "integer",
+            "minimum": 0,
+            "forms": [
+                {
+                    "op": [
+                        "readproperty"
+                    ],
+                    "href": "io.github.pervasivecats:antiTheftSystem-{storeId}/attributes/storeId"
+                }
+            ]
+        }
+    },
+    //...
+}
 ```
 
 In "uriVariables" vengono definite le variabili che appaiono negli URI presenti nel "Thing Model", come ad esempio nell'URI che
@@ -105,78 +108,82 @@ perché per modificare le proprietà è necessario passare attraverso le "action
 Nel blocco "forms" di ogni proprietà viene descritto l'_endpoint_ grazie al quale potervi accedere tramite un URI.
 
 ```json
-"actions": {
-    "raiseAlarm": {
-        "title": "raiseAlarm",
-        "description": "Raises the anti-theft alarm, which will emit a sound for a certain amount of time.",
-        "forms": [
-            {
-                "op": [
-                    "invokeaction"
-                ],
-                "href": "io.github.pervasivecats:antiTheftSystem-{storeId}/messages/inbox/raiseAlarm",
-                "contentType": "none/none",
-                "response": {
-                    "contentType": "application/json"
-                }
-            }
-        ],
-        "safe": false,
-        "idempotent": false,
-        "input": {},
-        "output": {
-            "oneOf": [
+{
+    //...
+    "actions": {
+        "raiseAlarm": {
+            "title": "raiseAlarm",
+            "description": "Raises the anti-theft alarm, which will emit a sound for a certain amount of time.",
+            "forms": [
                 {
-                    "type": "object",
-                    "required": [
-                        "error",
-                        "result"
+                    "op": [
+                        "invokeaction"
                     ],
-                    "properties": {
-                        "result": {
-                            "type": "integer",
-                            "const": 1
-                        },
-                        "error": {
-                            "type": "null"
-                        }
+                    "href": "io.github.pervasivecats:antiTheftSystem-{storeId}/messages/inbox/raiseAlarm",
+                    "contentType": "none/none",
+                    "response": {
+                        "contentType": "application/json"
                     }
-                },
-                {
-                    "type": "object",
-                    "required": [
-                        "error",
-                        "result"
-                    ],
-                    "properties": {
-                        "result": {
-                            "type": "null"
-                        },
-                        "error": {
-                            "type": "object",
-                            "required": [
-                                "type",
-                                "message"
-                            ],
-                            "properties": {
-                                "type": {
-                                    "type": "string",
-                                    "enum": [
-                                        "AlarmAlreadyRaised",
-                                        "AlarmNotRaised"
-                                    ]
-                                },
-                                "message": {
-                                    "type": "string"
+                }
+            ],
+            "safe": false,
+            "idempotent": false,
+            "input": {},
+            "output": {
+                "oneOf": [
+                    {
+                        "type": "object",
+                        "required": [
+                            "error",
+                            "result"
+                        ],
+                        "properties": {
+                            "result": {
+                                "type": "integer",
+                                "const": 1
+                            },
+                            "error": {
+                                "type": "null"
+                            }
+                        }
+                    },
+                    {
+                        "type": "object",
+                        "required": [
+                            "error",
+                            "result"
+                        ],
+                        "properties": {
+                            "result": {
+                                "type": "null"
+                            },
+                            "error": {
+                                "type": "object",
+                                "required": [
+                                    "type",
+                                    "message"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "AlarmAlreadyRaised",
+                                            "AlarmNotRaised"
+                                        ]
+                                    },
+                                    "message": {
+                                        "type": "string"
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            ]
+                ]
+            }
         }
-    }
-},
+    },
+    //...
+}
 ```
 
 Le azioni che è possibile compiere su di una _thing_ vengono definite tramite il blocco "actions". Per scelta,
@@ -190,33 +197,36 @@ e una spiegazione in linguaggio naturale sull'errore. Nel blocco "forms" di ogni
 quale poterla invocare tramite un URI, oltre ai già citati formati per l'input e l'output della stessa.
 
 ```json
-"events": {
-    "itemDetected": {
-        "title": "itemDetected",
-        "description": "The anti-theft alarm has detected an item exiting the store",
-        "forms": [
-            {
-                "op": [
-                    "subscribeevent"
-                ],
-                "href": "io.github.pervasivecats:antiTheftSystem-{storeId}/messages/outbox/itemDetected",
-                "contentType": "application/json"
-            }
-        ],
-        "data": {
-            "type": "object",
-            "required": [
-                "catalogItemId",
-                "itemId"
+{
+    //...
+    "events": {
+        "itemDetected": {
+            "title": "itemDetected",
+            "description": "The anti-theft alarm has detected an item exiting the store",
+            "forms": [
+                {
+                    "op": [
+                        "subscribeevent"
+                    ],
+                    "href": "io.github.pervasivecats:antiTheftSystem-{storeId}/messages/outbox/itemDetected",
+                    "contentType": "application/json"
+                }
             ],
-            "properties": {
-                "catalogItemId": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "itemId": {
-                    "type": "integer",
-                    "minimum": 0
+            "data": {
+                "type": "object",
+                "required": [
+                    "catalogItemId",
+                    "itemId"
+                ],
+                "properties": {
+                    "catalogItemId": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "itemId": {
+                        "type": "integer",
+                        "minimum": 0
+                    }
                 }
             }
         }
