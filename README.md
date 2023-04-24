@@ -6,6 +6,8 @@
 [![Issues](https://img.shields.io/github/issues/pervasive-cats/toys-store)](https://github.com/pervasive-cats/toys-store/issues)
 [![Pull requests](https://img.shields.io/github/issues-pr/pervasive-cats/toys-store)](https://github.com/pervasive-cats/toys-store/pulls)
 
+This is the repository for the project for courses "Laboratorio di Sistemi Software" and "Pervasive Computing" A.Y. 2021-2022.
+
 ## Copyright Statement
 
 The entire content of this repository is Copyright © 2022-2023 by Pervasive Cats S.r.l.s. All Rights Reserved. This repository may
