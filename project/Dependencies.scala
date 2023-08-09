@@ -14,5 +14,5 @@ object Dependencies {
 
   lazy val postgresql: ModuleID = "org.postgresql" % "postgresql" % "42.6.0"
 
-  lazy val quill: ModuleID = "io.getquill" %% "quill-jdbc" % "4.6.0.1"
+  lazy val quill: ModuleID = "io.getquill" %% "quill-jdbc" % "4.6.1"
 }
