@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   rabbitmq:
-    image: "rabbitmq:3.11.7"
+    image: "rabbitmq:3.11.23"
     ports:
       - "81:15672"
     expose:
